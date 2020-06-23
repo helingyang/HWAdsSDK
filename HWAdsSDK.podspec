@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.0.2"
+  spec.version      = "0.0.3"
   spec.summary      = "这是HWAdsSDK"
 
   # This description is used to generate tags and improve search results.
@@ -89,7 +89,10 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
     
-    spec.source_files = 'SDK/**/*.{h,m}'
+    #spec.source_files = 'SDK/**/*.{h,m}' 该路径下所有
+    
+    spec.source_files = 'SDK/*.{h,m}'
+    
   #spec.source_files  = "HWAdsSDK", "SDK/**/*.{h,m}"
   #spec.exclude_files = "Classes/Exclude"
 

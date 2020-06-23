@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.0.3"
+  spec.version      = "0.0.4"
   spec.summary      = "这是HWAdsSDK"
 
   # This description is used to generate tags and improve search results.
@@ -91,7 +91,7 @@ Pod::Spec.new do |spec|
     
     #spec.source_files = 'SDK/**/*.{h,m}' 该路径下所有
     
-    spec.source_files = 'SDK/*.{h,m}'
+    spec.source_files = 'SDK/*.{h,m}','Adapter/Adjust/**/*.{h,m}'
     
   #spec.source_files  = "HWAdsSDK", "SDK/**/*.{h,m}"
   #spec.exclude_files = "Classes/Exclude"
@@ -119,9 +119,9 @@ Pod::Spec.new do |spec|
   #  the lib prefix of their name.
   #
 
-  # spec.vendored_frameworks  = "SDK/FBAudienceNetwork/Static/FBAudienceNetwork"
-   spec.vendored_framework  = 'SDK/FBSDKCoreKit.framework'
-    #spec.framework = "SDK/FBSDKCoreKit.framework"
+  # spec.vendored_frameworks  = "SDK/FBAudienceNetwork/Static/FBAudienceNetwork" #'SDK/FBSDKCoreKit.framework'
+    spec.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework','SDK/FBSDKCoreKit.framework'
+    spec.frameworks = "AdSupport","AVFoundation","CoreGraphics","CoreLocation","CoreMedia","CoreTelephony","Foundation","MediaPlayer","MessageUI","QuartzCore","SafariServices","StoreKit","SystemConfiguration","UIKit","WebKit"
     #spec.framework  = "SDK/FBSDKCoreKit"
   # spec.frameworks = "SomeFramework", "AnotherFramework"
 
@@ -138,6 +138,21 @@ Pod::Spec.new do |spec|
    spec.requires_arc = true
 
   # spec.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
-  # spec.dependency "JSONKit", "~> 1.4"
-
+   #spec.dependency "JSONKit", "~> 1.4"
+  spec.dependency "AppLovinSDK", "6.12.6"
+  spec.dependency "IronSourceSDK", "6.16.1.0"
+  spec.dependency "UnityAds", "3.4.2"
+  spec.dependency "VungleSDK-iOS", "6.5.3"
+  spec.dependency "Bytedance-UnionAD", "~> 1.9.8.2"
+  spec.dependency "GDTMobSDK", "~> 4.11.8"
+  spec.dependency "SigmobAd-iOS", "2.18.2"
+  spec.dependency "MintegralAdSDK/BannerAd", "6.2.0.0"
+  spec.dependency "MintegralAdSDK/BidBannerAd", "6.2.0.0"
+  spec.dependency "MintegralAdSDK/BidInterstitialVideoAd", "6.2.0.0"
+  spec.dependency "MintegralAdSDK/BidNativeAd", "6.2.0.0"
+  spec.dependency "MintegralAdSDK/BidRewardVideoAd", "6.2.0.0"
+  spec.dependency "MintegralAdSDK/InterstitialVideoAd", "6.2.0.0"
+  spec.dependency "MintegralAdSDK/NativeAd", "6.2.0.0"
+  spec.dependency "MintegralAdSDK/RewardVideoAd", "6.2.0.0"
+    
 end

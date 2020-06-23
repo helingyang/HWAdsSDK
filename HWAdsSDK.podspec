@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.summary      = "这是HWAdsSDK"
 
   # This description is used to generate tags and improve search results.
@@ -117,12 +117,12 @@ Pod::Spec.new do |spec|
   #
 
   # spec.vendored_frameworks  = "SDK/FBAudienceNetwork/Static/FBAudienceNetwork"
-   #spec.vendored_frameworks  = 'SDK/FBSDKCoreKit.framework'
+   spec.vendored_framework  = 'SDK/FBSDKCoreKit.framework'
     #spec.framework = "SDK/FBSDKCoreKit.framework"
     #spec.framework  = "SDK/FBSDKCoreKit"
   # spec.frameworks = "SomeFramework", "AnotherFramework"
 
-   spec.library   = "FBSDKCoreKit"
+   #spec.ios.vendored_frameworks   = "FBSDKCoreKit"
   # spec.libraries = "iconv", "xml2"
 
 

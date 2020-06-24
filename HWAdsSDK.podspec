@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.0.4"
+  spec.version      = "0.0.5"
   spec.summary      = "这是HWAdsSDK"
 
   # This description is used to generate tags and improve search results.
@@ -91,12 +91,51 @@ Pod::Spec.new do |spec|
     
     #spec.source_files = 'SDK/**/*.{h,m}' 该路径下所有
     
-    spec.source_files = 'SDK/*.{h,m}','Adapter/Adjust/**/*.{h,m}'
+    spec.source_files = 'SDK/*.{h,m}','Adapter/**/*.{h,m}'
     
   #spec.source_files  = "HWAdsSDK", "SDK/**/*.{h,m}"
   #spec.exclude_files = "Classes/Exclude"
 
   # spec.public_header_files = "Classes/**/*.h"
+
+    #spec.subspec 'Adapter' do |ss|
+      #  ss.subspec 'Adjust' do |ss1|
+      #  ss1.source_files = 'Adapter/Adjust/**/*.{h,m}'
+       # end
+       # ss.subspec 'AdMobAdapters' do |ss2|
+        #ss2.source_files = 'Adapter/MoPub-AdMob-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'ApplovinAdapters' do |ss3|
+        #ss3.source_files = 'Adapter/MoPub-Applovin-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'CSJAdapters' do |ss4|
+        #ss4.source_files = 'Adapter/Mopub-CSJ-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'FacebookAdapters' do |ss5|
+        #ss5.source_files = 'Adapter/MoPub-FacebookAudienceNetwork-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'GDTAdapters' do |ss6|
+        #ss6.source_files = 'Adapter/Mopub-GDT-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'mopubiOSSdk' do |ss7|
+        #ss7.source_files = 'Adapter/mopub-ios-sdk/MoPubSDK/**/*'
+        #end
+        #ss.subspec 'IronSourceAdapters' do |ss8|
+        #ss8.source_files = 'Adapter/MoPub-IronSource-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'MintegralAdapters' do |ss9|
+        #ss9.source_files = 'Adapter/MoPub-Mintegral-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'SigmobAdapters' do |ss10|
+        #ss10.source_files = 'Adapter/Mopub-Sigmob-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'UnityAdsAdapters' do |ss11|
+        #ss11.source_files = 'Adapter/MoPub-UnityAds-Adapters/**/*.{h,m}'
+        #end
+        #ss.subspec 'VungleAdapters' do |ss12|
+        #ss12.source_files = 'Adapter/MoPub-Vungle-Adapters/**/*.{h,m}'
+        #end
+    #end
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -108,7 +147,7 @@ Pod::Spec.new do |spec|
   #
 
   # spec.resource  = "icon.png"
-  # spec.resources = "Resources/*.png"
+    spec.resources = "Adapter/mopub-ios-sdk/MoPubSDK/Resources/*.png"
 
   # spec.preserve_paths = "FilesToSave", "MoreFilesToSave"
 
@@ -118,15 +157,14 @@ Pod::Spec.new do |spec|
   #  Link your library with frameworks, or libraries. Libraries do not include
   #  the lib prefix of their name.
   #
-
-  # spec.vendored_frameworks  = "SDK/FBAudienceNetwork/Static/FBAudienceNetwork" #'SDK/FBSDKCoreKit.framework'
-    spec.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework','SDK/FBSDKCoreKit.framework'
+    #非系统框架
+    #spec.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework','SDK/AppsFlyerFramework/AppsFlyerLib.framework','SDK/FBSDKCoreKit.framework','Adapter/mopub-ios-sdk/MoPubSDK/Viewability/MOAT/MPUBMoatMobileAppKit.framework'
+    #,'SDK/FBAudienceNetwork.framework'
+    spec.vendored_frameworks = "SDK/**/*.framework"
+    # 系统框架
     spec.frameworks = "AdSupport","AVFoundation","CoreGraphics","CoreLocation","CoreMedia","CoreTelephony","Foundation","MediaPlayer","MessageUI","QuartzCore","SafariServices","StoreKit","SystemConfiguration","UIKit","WebKit"
-    #spec.framework  = "SDK/FBSDKCoreKit"
-  # spec.frameworks = "SomeFramework", "AnotherFramework"
-
-   #spec.ios.vendored_frameworks   = "FBSDKCoreKit"
-  # spec.libraries = "iconv", "xml2"
+    #非系统静态库
+   spec.vendored_libraries = "Adapter/mopub-ios-sdk/MoPubSDK/Viewability/Avid/libAvid-mopub-3.6.1.a"
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -139,6 +177,7 @@ Pod::Spec.new do |spec|
 
   # spec.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
    #spec.dependency "JSONKit", "~> 1.4"
+  spec.dependency "Google-Mobile-Ads-SDK", "7.59.0"
   spec.dependency "AppLovinSDK", "6.12.6"
   spec.dependency "IronSourceSDK", "6.16.1.0"
   spec.dependency "UnityAds", "3.4.2"

@@ -172,8 +172,9 @@ Pod::Spec.new do |spec|
   #  If your library depends on compiler flags you can set them in the xcconfig hash
   #  where they will only apply to your library. If you depend on other Podspecs
   #  you can include multiple dependencies to ensure it works.
-    
-   #config.build_settings['ENABLE_BITCODE'] = 'NO' #设置bitcode
+    spec.xcconfig = {
+    'ENABLE_BITCODE' => 'NO',
+    }
    
       spec.requires_arc = true
 
@@ -184,7 +185,8 @@ Pod::Spec.new do |spec|
   spec.dependency "IronSourceSDK", "6.16.1.0"
   spec.dependency "UnityAds", "3.4.2"
   spec.dependency "VungleSDK-iOS", "6.5.3"
-  spec.dependency "Bytedance-UnionAD", "~> 1.9.8.2"
+  spec.dependency "Bytedance-UnionAD", "3.0.0.2"
+  #, "~> 1.9.8.2"
   spec.dependency "GDTMobSDK", "~> 4.11.8"
   spec.dependency "SigmobAd-iOS", "2.18.2"
   spec.dependency "MintegralAdSDK/BannerAd", "6.2.0.0"

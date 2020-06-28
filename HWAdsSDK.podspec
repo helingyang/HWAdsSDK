@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.0.7"
+  spec.version      = "0.0.8"
   spec.summary      = "这是HWAdsSDK"
 
   # This description is used to generate tags and improve search results.
@@ -173,8 +173,9 @@ Pod::Spec.new do |spec|
   #  where they will only apply to your library. If you depend on other Podspecs
   #  you can include multiple dependencies to ensure it works.
     
-   config.build_settings['ENABLE_BITCODE'] = 'NO' #设置bitcode
-   spec.requires_arc = true
+   #config.build_settings['ENABLE_BITCODE'] = 'NO' #设置bitcode
+   
+      spec.requires_arc = true
 
   # spec.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
    #spec.dependency "JSONKit", "~> 1.4"

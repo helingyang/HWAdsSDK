@@ -28,6 +28,11 @@
 
 }
 
+-(void)requestRewardedVideoWithCustomEventInfo:(NSDictionary *)info adMarkup:(NSString *)adMarkup{
+    NSLog(@"%@",adMarkup);
+    [self requestRewardedVideoWithCustomEventInfo:info];
+}
+
 - (void)requestRewardedVideoWithCustomEventInfo:(NSDictionary *)info
 {
     if(![info objectForKey:@"appId"]){

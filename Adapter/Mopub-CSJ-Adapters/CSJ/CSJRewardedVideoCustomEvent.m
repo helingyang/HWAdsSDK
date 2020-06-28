@@ -35,7 +35,10 @@
     MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.placementId);
 
 }
-
+-(void)requestRewardedVideoWithCustomEventInfo:(NSDictionary *)info adMarkup:(NSString *)adMarkup{
+    NSLog(@"%@",adMarkup);
+    [self requestRewardedVideoWithCustomEventInfo:info];
+}
 - (void)requestRewardedVideoWithCustomEventInfo:(NSDictionary *)info
 {
     if(![info objectForKey:@"placementId"]){
@@ -94,8 +97,7 @@
         [defaults setObject:@"CSJ" forKey:@"hwvideotype"];
         [defaults synchronize];
         [self.delegate rewardedVideoWillAppearForCustomEvent:self];
-        [self.rewardVideoAd showAdFromRootViewController:viewController];
-//        [self.rewardVideoAd showAdFromRootViewController:viewController ritScene:0 ritSceneDescribe:nil];
+        [self.rewardVideoAd showAdFromRootViewController:viewController ritScene:0 ritSceneDescribe:nil];
         [self.delegate rewardedVideoDidAppearForCustomEvent:self];
     }else{
         NSError *error = [NSError errorWithCode:MPRewardedVideoAdErrorNoAdsAvailable localizedDescription:@"Failed to show csj rewarded video: csj now claims that there is no available video ad."];

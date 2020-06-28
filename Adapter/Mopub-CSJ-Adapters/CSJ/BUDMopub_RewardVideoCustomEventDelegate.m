@@ -34,7 +34,7 @@
 }
 
 - (void)rewardedVideoAdDidClose:(BURewardedVideoAd *)rewardedVideoAd {
-     NSLog(@"hlyLog:CSJ rewardedVideo加载关闭");
+     NSLog(@"hlyLog:CSJ rewardedVideo关闭");
     [self.adapter.delegate rewardedVideoDidDisappearForCustomEvent:self.adapter];
 }
     

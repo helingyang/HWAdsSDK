@@ -35,6 +35,10 @@ BOOL *isRewardLoaded;
 {
 //    MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.placementId);
 }
+-(void)requestRewardedVideoWithCustomEventInfo:(NSDictionary *)info adMarkup:(NSString *)adMarkup{
+    NSLog(@"%@",adMarkup);
+    [self requestRewardedVideoWithCustomEventInfo:info];
+}
 
 - (void)requestRewardedVideoWithCustomEventInfo:(NSDictionary *)info
 {

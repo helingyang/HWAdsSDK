@@ -16,15 +16,15 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.0.9"
-  spec.summary      = "这是HWAdsSDK"
+  spec.version      = "0.1.0"
+  spec.summary      = "用于请求HW广告,一键集成SDK"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
   #   * Try to keep it short, snappy and to the point.
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
-  spec.description  = "用于请求HW广告,下载sdk一键集成"
+  spec.description  = "HWAdsSDK是哈乐沃德对外提供广告SDK，通过该sdk可请求mopub、谷歌、FaceBook、广点通、穿山甲、Sigmob、Applovin、UnityAds、IronSource、Mintegral、Vungle共11家广告商的广告。"
 
   spec.homepage     = "https://github.com/helingyang/HWAdsSDK"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"

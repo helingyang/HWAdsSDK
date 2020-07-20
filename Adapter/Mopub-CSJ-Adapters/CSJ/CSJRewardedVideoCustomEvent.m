@@ -15,7 +15,8 @@
 
 #import "CSJRewardedVideoCustomEvent.h"
 #import "CSJAdapterConfiguration.h"
-#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+#import <HwFrameworkUpTest1/HwAds.h>
 #import "BUDMopub_RewardVideoCustomEventDelegate.h"
 
 #import <BUAdSDK/BUAdSDK.h>

@@ -13,8 +13,8 @@
 #import "MPLogging.h"
 #endif
 #import <CoreLocation/CoreLocation.h>
-#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-
+//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+#import <HwFrameworkUpTest1/HwAds.h>
 @interface MPGoogleAdMobInterstitialCustomEvent () <GADInterstitialDelegate>
 
 @property(nonatomic, strong) GADInterstitial *interstitial;

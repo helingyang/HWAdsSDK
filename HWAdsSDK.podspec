@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.1.2"
+  spec.version      = "0.1.3"
   spec.summary      = "用于请求HW广告,一键集成SDK"
 
   # This description is used to generate tags and improve search results.
@@ -101,11 +101,11 @@ Pod::Spec.new do |spec|
         ss1.source_files = 'Adapter/Adjust/**/*.{h,m}'
         end
         ss.subspec 'mopubiOSSdk' do |ss7|
-        ss7.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework'
+        #ss7.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework'
         ss7.source_files = 'Adapter/mopub-ios-sdk/MoPubSDK/**/*.{h,m}'
         ss7.resources = "Adapter/mopub-ios-sdk/MoPubSDK/Resources/*.png"
         ss7.vendored_libraries = "Adapter/mopub-ios-sdk/MoPubSDK/Viewability/Avid/libAvid-mopub-3.6.1.a"
-        ss7.vendored_frameworks  = 'Adapter/mopub-ios-sdk/MoPubSDK/Viewability/MOAT/MPUBMoatMobileAppKit.framework'
+        ss7.vendored_frameworks  = 'Adapter/mopub-ios-sdk/MoPubSDK/Viewability/MOAT/MPUBMoatMobileAppKit.framework','SDK/HwFrameworkUpTest1.framework'
         end
         ss.subspec 'AdMobAdapters' do |ss2|
         ss2.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework'
@@ -123,9 +123,9 @@ Pod::Spec.new do |spec|
         ss4.source_files = 'Adapter/Mopub-CSJ-Adapters/**/*.{h,m}'
         end
         ss.subspec 'FacebookAdapters' do |ss5|
-        ss5.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework'
+        #ss5.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework'
         ss5.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss5.vendored_frameworks  = 'SDK/FBSDKCoreKit.framework','SDK/FBAudienceNetwork.framework'
+        ss5.vendored_frameworks  = 'SDK/FBSDKCoreKit.framework','SDK/FBAudienceNetwork.framework','SDK/HwFrameworkUpTest1.framework'
         ss5.source_files = 'Adapter/MoPub-FacebookAudienceNetwork-Adapters/**/*.{h,m}'
         end
         ss.subspec 'GDTAdapters' do |ss6|

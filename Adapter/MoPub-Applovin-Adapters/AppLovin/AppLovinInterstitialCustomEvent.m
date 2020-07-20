@@ -1,7 +1,7 @@
 #import "AppLovinInterstitialCustomEvent.h"
 #import "AppLovinAdapterConfiguration.h"
-#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-
+//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+#import <HwFrameworkUpTest1/HwAds.h>
 #if __has_include("MoPub.h")
     #import "MPError.h"
     #import "MPLogging.h"

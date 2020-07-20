@@ -9,7 +9,8 @@
 #import "SigmobAdapterConfiguration.h"
 #import <WindSDK/WindSDK.h>
 #import <WindSDK/WindFullscreenVideoAd.h>
-#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+#import <HwFrameworkUpTest1/HwAds.h>
 
 #if __has_include("MoPub.h")
 #import "MoPub.h"

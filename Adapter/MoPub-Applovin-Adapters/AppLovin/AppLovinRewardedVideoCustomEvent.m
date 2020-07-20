@@ -1,6 +1,6 @@
 #import "AppLovinRewardedVideoCustomEvent.h"
 #import "AppLovinAdapterConfiguration.h"
-
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 #if __has_include("MoPub.h")
     #import "MPRewardedVideoReward.h"
     #import "MPError.h"
@@ -120,6 +120,7 @@ static NSMutableDictionary<NSString *, ALIncentivizedInterstitialAd *> *ALGlobal
         [self.incent preloadAndNotify: self];
         MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], [self getAdNetworkId]);
     }
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:request isReward:YES Channel:@"Applovin"];
 }
 
 - (BOOL)hasAdAvailable
@@ -137,7 +138,7 @@ static NSMutableDictionary<NSString *, ALIncentivizedInterstitialAd *> *ALGlobal
 - (void)presentRewardedVideoFromViewController:(UIViewController *)viewController
 {
     MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
-
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:show isReward:YES Channel:@"Applovin"];
     if ( [self hasAdAvailable] )
     {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -178,7 +179,7 @@ static NSMutableDictionary<NSString *, ALIncentivizedInterstitialAd *> *ALGlobal
     {
         self.tokenAd = ad;
     }
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:requestSuccess isReward:YES Channel:@"Applovin"];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate rewardedVideoDidLoadAdForCustomEvent: self];
         
@@ -189,6 +190,7 @@ static NSMutableDictionary<NSString *, ALIncentivizedInterstitialAd *> *ALGlobal
 - (void)adService:(ALAdService *)adService didFailToLoadAdWithError:(int)code
 {
     NSLog(@"hlyLog:Applovin Rewarded加载失败");
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:requestFailed isReward:YES Channel:@"Applovin"];
     NSError *error = [NSError errorWithDomain: kALMoPubMediationErrorDomain
                                          code: [self toMoPubErrorCode: code]
                                      userInfo: nil];
@@ -216,12 +218,13 @@ static NSMutableDictionary<NSString *, ALIncentivizedInterstitialAd *> *ALGlobal
     NSLog(@"hlyLog:Applovin Rewarded关闭");
     if ( self.fullyWatched && self.reward )
     {
+        [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:reward isReward:YES Channel:@"Applovin"];
         [self.delegate rewardedVideoShouldRewardUserForCustomEvent: self reward: self.reward];
     }
     
     [self.delegate rewardedVideoWillDisappearForCustomEvent: self];
     [self.delegate rewardedVideoDidDisappearForCustomEvent: self];
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:AdClose isReward:YES Channel:@"Applovin"];
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
     
     self.incent = nil;
@@ -231,7 +234,7 @@ static NSMutableDictionary<NSString *, ALIncentivizedInterstitialAd *> *ALGlobal
 {
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent: self];
     [self.delegate rewardedVideoWillLeaveApplicationForCustomEvent: self];
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:click isReward:YES Channel:@"Applovin"];
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
 }
 
@@ -246,6 +249,11 @@ static NSMutableDictionary<NSString *, ALIncentivizedInterstitialAd *> *ALGlobal
     MPLogInfo(@"Rewarded video video playback ended at playback percent: %lu", (unsigned long)percentPlayed.unsignedIntegerValue);
     
     self.fullyWatched = wasFullyWatched;
+    if (wasFullyWatched) {
+        [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:showSuccess isReward:YES Channel:@"Applovin"];
+    }else{
+        [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:showFailed isReward:YES Channel:@"Applovin"];
+    }
 }
 
 #pragma mark - Reward Delegate

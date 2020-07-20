@@ -9,6 +9,7 @@
 #import "SigmobAdapterConfiguration.h"
 #import <WindSDK/WindSDK.h>
 #import <WindSDK/WindFullscreenVideoAd.h>
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 
 #if __has_include("MoPub.h")
 #import "MoPub.h"
@@ -53,10 +54,10 @@
     
     self.placementId = info[@"placementId"];
     
-    WindAdRequest *request = [WindAdRequest request];
+    WindAdRequest *requestt = [WindAdRequest request];
     [WindFullscreenVideoAd sharedInstance].delegate = self;
-    
-    [[WindFullscreenVideoAd sharedInstance] loadRequest:request withPlacementId:self.placementId];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:NO Channel:@"Sigmob"];
+    [[WindFullscreenVideoAd sharedInstance] loadRequest:requestt withPlacementId:self.placementId];
 }
 
 - (void)showInterstitialFromRootViewController:(UIViewController *)controller {
@@ -68,6 +69,7 @@
                                  andSuggestion:@""];
 
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.placementId);
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"Sigmob"];
         [self.delegate interstitialCustomEventDidExpire:self];
     } else {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -76,10 +78,11 @@
         MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.placementId);
 
         MPLogAdEvent([MPLogEvent adWillAppearForAdapter:NSStringFromClass(self.class)], self.placementId);
-        [self.delegate interstitialCustomEventWillAppear:self];
+//        [self.delegate interstitialCustomEventWillAppear:self];
         NSError *error = nil;
         [[WindFullscreenVideoAd sharedInstance] playAd:controller withPlacementId:self.placementId options:nil error:&error];
         MPLogAdEvent([MPLogEvent adDidAppearForAdapter:NSStringFromClass(self.class)], self.placementId);
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:NO Channel:@"Sigmob"];
         [self.delegate interstitialCustomEventDidAppear:self];
     }
 }
@@ -107,6 +110,7 @@
  */
 - (void)onFullscreenVideoAdLoadSuccess:(NSString *)placementId{
     NSLog(@"hlyLog:SigmobInterstitialAd加载成功");
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestSuccess isReward:NO Channel:@"Sigmob"];
     [self.delegate interstitialCustomEvent:self didLoadAd:[WindFullscreenVideoAd sharedInstance]];
 }
 
@@ -118,6 +122,7 @@
 - (void)onFullscreenVideoAdError:(NSError *)error placementId:(NSString *)placementId{
     NSLog(@"hlyLog:SigmobInterstitialAd加载失败");
     NSLog(@"sigmob error %@",error);
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:NO Channel:@"Sigmob"];
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
 
@@ -127,6 +132,7 @@
  */
 - (void)onFullscreenVideoAdClosed:(NSString *)placementId{
     NSLog(@"hlyLog:SigmobInterstitialAd关闭");
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:AdClose isReward:NO Channel:@"Sigmob"];
     [self.delegate interstitialCustomEventDidDisappear:self];
 }
 
@@ -136,7 +142,8 @@
  @param placementId 广告位Id
  */
 - (void)onFullscreenVideoAdPlayStart:(NSString *)placementId{
-    [self.delegate interstitialCustomEventDidAppear:self];
+//    [self.delegate interstitialCustomEventDidAppear:self];
+    [self.delegate interstitialCustomEventWillAppear:self];
 }
 
 /**
@@ -145,6 +152,7 @@
  @param placementId 广告位Id
  */
 - (void)onFullscreenVideoAdClicked:(NSString *)placementId{
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:NO Channel:@"Sigmob"];
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
 }
 
@@ -155,6 +163,7 @@
  */
 - (void)onFullscreenVideoAdPlayError:(NSError *)error placementId:(NSString *)placementId{
     //播放失败，这里传关闭的回调
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"Sigmob"];
     [self.delegate interstitialCustomEventDidDisappear:nil];
 }
 
@@ -163,7 +172,8 @@
  @param placementId 广告位Id
  */
 - (void)onFullscreenVideoAdPlayEnd:(NSString *)placementId{
-    [self.delegate interstitialCustomEventDidDisappear:self];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showSuccess isReward:NO Channel:@"Sigmob"];
+//    [self.delegate interstitialCustomEventDidDisappear:self];
 }
 
 /**

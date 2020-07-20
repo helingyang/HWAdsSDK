@@ -3,6 +3,7 @@
 #import <MTGSDKInterstitialVideo/MTGInterstitialVideoAdManager.h>
 #import <MTGSDKInterstitialVideo/MTGBidInterstitialVideoAdManager.h>
 #import "MintegralAdapterConfiguration.h"
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 #if __has_include(<MoPubSDKFramework/MoPub.h>)
     #import <MoPubSDKFramework/MoPub.h>
 #else
@@ -38,7 +39,7 @@
     
     if (errorMsg) {
         NSError *error = [NSError errorWithDomain:kMintegralErrorDomain code:-1500 userInfo:@{NSLocalizedDescriptionKey : errorMsg}];
-        
+        [[HwAds instance] hwAdsEventByPlacementId:unitId hwSdkState:requestFailed isReward:NO Channel:@"Mintegral"];
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], nil);
         [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
         
@@ -71,7 +72,7 @@
         _mtgInterstitialVideoAdManager.playVideoMute = [MintegralAdapterConfiguration isMute];
         [_mtgInterstitialVideoAdManager loadAd];
     }
-    
+    [[HwAds instance] hwAdsEventByPlacementId:unitId hwSdkState:request isReward:NO Channel:@"Mintegral"];
     MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], self.adUnitId);
 }
 
@@ -85,8 +86,10 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:@"Mintegral" forKey:@"hwintertype"];
     [defaults synchronize];
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:show isReward:NO Channel:@"Mintegral"];
     if (self.adm) {
         MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.adUnitId);
+        
         _ivBidAdManager.playVideoMute = [MintegralAdapterConfiguration isMute];
         [_ivBidAdManager showFromViewController:rootViewController];
     } else {
@@ -102,6 +105,7 @@
     NSLog(@"hlyLog:Mintergral interstitial加载成功");
     if (self.delegate && [self.delegate respondsToSelector:@selector(interstitialCustomEvent: didLoadAd:)]) {
         MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.adUnitId);
+        [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:requestSuccess isReward:NO Channel:@"Mintegral"];
         [self.delegate interstitialCustomEvent:self didLoadAd:nil];
     }
 }
@@ -111,6 +115,7 @@
     NSLog(@"hlyLog:Mintergral interstitial加载失败");
     if (self.delegate && [self.delegate respondsToSelector:@selector(interstitialCustomEvent: didFailToLoadAdWithError:)]) {
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], nil);
+        [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:requestFailed isReward:NO Channel:@"Mintegral"];
         [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
     }
 }
@@ -118,7 +123,7 @@
 - (void)onInterstitialVideoShowSuccess:(MTGInterstitialVideoAdManager *_Nonnull)adManager
 {
     MPLogAdEvent([MPLogEvent adShowSuccessForAdapter:NSStringFromClass(self.class)], self.adUnitId);
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:showSuccess isReward:NO Channel:@"Mintegral"];
     if (self.delegate && [self.delegate respondsToSelector:@selector(interstitialCustomEventWillAppear:)]) {
         MPLogAdEvent([MPLogEvent adWillAppearForAdapter:NSStringFromClass(self.class)], self.adUnitId);
         [self.delegate interstitialCustomEventWillAppear:self ];
@@ -136,13 +141,14 @@
 
 - (void)onInterstitialVideoShowFail:(nonnull NSError *)error adManager:(MTGInterstitialVideoAdManager *_Nonnull)adManager
 {
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:showFailed isReward:NO Channel:@"Mintegral"];
     MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.adUnitId);
     [self.delegate interstitialCustomEventDidExpire:self];
 }
 
 - (void)onInterstitialVideoAdClick:(MTGInterstitialVideoAdManager *_Nonnull)adManager{
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], self.adUnitId);
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:click isReward:NO Channel:@"Mintegral"];
     if (self.delegate && [self.delegate respondsToSelector:@selector(trackClick)]) {
         [self.delegate trackClick];
     }
@@ -156,7 +162,7 @@
 {
     NSLog(@"hlyLog:Mintergral interstitial关闭");
     MPLogAdEvent([MPLogEvent adWillDisappearForAdapter:NSStringFromClass(self.class)], self.adUnitId);
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:AdClose isReward:NO Channel:@"Mintegral"];
     if (self.delegate && [self.delegate respondsToSelector:@selector(interstitialCustomEventWillDisappear:)]) {
         [self.delegate interstitialCustomEventWillDisappear:self ];
     }

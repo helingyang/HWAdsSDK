@@ -14,6 +14,7 @@
 #import "MPRewardedVideoError.h"
 #import "MPCountdownTimerView.h"
 #import "UIView+MPAdditions.h"
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 
 const NSTimeInterval kDefaultCountdownTimerIntervalInSeconds = 30;
 
@@ -74,7 +75,8 @@ const NSTimeInterval kDefaultCountdownTimerIntervalInSeconds = 30;
 - (void)rewardUserWithConfiguration:(MPAdConfiguration *)configuration timerHasElapsed:(BOOL)hasElasped  {
     if (!self.userRewarded && (hasElasped || configuration.rewardedPlayableShouldRewardOnClick)) {
         MPLogInfo(@"MoPub rewarded playable user rewarded.");
-
+        [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:reward isReward:YES Channel:@"Mopub"];
+        [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:showSuccess isReward:YES Channel:@"Mopub"];
         [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:configuration.selectedReward];
         self.userRewarded = YES;
     }
@@ -89,7 +91,7 @@ const NSTimeInterval kDefaultCountdownTimerIntervalInSeconds = 30;
     MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(configuration.customEventClass) dspCreativeId:configuration.dspCreativeId dspName:nil], self.adUnitId);
 
     self.interstitial.delegate = self;
-
+    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:request isReward:YES Channel:@"Mopub"];
     [self.interstitial setCloseButtonStyle:MPInterstitialCloseButtonStyleAlwaysHidden];
     [self.interstitial startLoading];
 }
@@ -108,14 +110,14 @@ const NSTimeInterval kDefaultCountdownTimerIntervalInSeconds = 30;
 
 - (void)presentRewardedVideoFromViewController:(UIViewController *)viewController {
     MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.adUnitId);
-
+    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:show isReward:YES Channel:@"Mopub"];
     // Error handling block.
     __typeof__(self) __weak weakSelf = self;
     void (^onShowError)(NSError *) = ^(NSError * error) {
         __typeof__(self) strongSelf = weakSelf;
         if (strongSelf != nil) {
             MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(strongSelf.class) error:error], strongSelf.adUnitId);
-
+            [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:showFailed isReward:YES Channel:@"Mopub"];
             [strongSelf.delegate rewardedVideoDidFailToPlayForCustomEvent:strongSelf error:error];
             [strongSelf showCloseButton];
         }
@@ -165,6 +167,7 @@ const NSTimeInterval kDefaultCountdownTimerIntervalInSeconds = 30;
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.adUnitId);
     NSLog(@"hlyLog:MoPubPlayable Reward加载成功");
     self.adAvailable = YES;
+    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:requestSuccess isReward:YES Channel:@"Mopub"];
     [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
 }
 
@@ -184,7 +187,7 @@ const NSTimeInterval kDefaultCountdownTimerIntervalInSeconds = 30;
     NSString * message = [NSString stringWithFormat:@"Failed to load creative:\n%@", self.delegate.configuration.adResponseHTMLString];
     NSError * error = [NSError errorWithCode:MOPUBErrorAdapterFailedToLoadAd localizedDescription:message];
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], self.adUnitId);
-
+    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:requestFailed isReward:YES Channel:@"Mopub"];
     self.adAvailable = NO;
     [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:nil];
 }
@@ -198,13 +201,14 @@ const NSTimeInterval kDefaultCountdownTimerIntervalInSeconds = 30;
     self.adAvailable = NO;
     [self.timerView stopAndSignalCompletion:NO];
     [self.delegate rewardedVideoDidDisappearForCustomEvent:self];
-
+    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:AdClose isReward:YES Channel:@"Mopub"];
     // Get rid of the interstitial view controller when done with it so we don't hold on longer than needed
     self.interstitial = nil;
 }
 
 - (void)interstitialDidReceiveTapEvent:(id<MPInterstitialViewController>)interstitial {
     [self rewardUserWithConfiguration:self.delegate.configuration timerHasElapsed:NO];
+    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:click isReward:YES Channel:@"Mopub"];
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self];
 }
 

@@ -11,6 +11,7 @@
 #import "MPAdConfiguration.h"
 #import "MPError.h"
 #import "MPLogging.h"
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 
 @interface MPHTMLInterstitialCustomEvent ()
 
@@ -46,7 +47,7 @@
 {
     MPAdConfiguration * configuration = self.delegate.configuration;
     MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:configuration.dspCreativeId dspName:nil], self.adUnitId);
-
+    [[HwAds instance] hwAdsEventByPlacementId:@"mopub" hwSdkState:request isReward:NO Channel:@"Mopub"];
     self.interstitial = [[MPHTMLInterstitialViewController alloc] init];
     self.interstitial.delegate = self;
     self.interstitial.orientationType = configuration.orientationType;
@@ -56,10 +57,12 @@
 
 - (void)showInterstitialFromRootViewController:(UIViewController *)rootViewController
 {
+    [[HwAds instance] hwAdsEventByPlacementId:@"mopub" hwSdkState:show isReward:NO Channel:@"Mopub"];
     MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.adUnitId);
     [self.interstitial presentInterstitialFromViewController:rootViewController complete:^(NSError * error) {
         if (error != nil) {
             MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.adUnitId);
+            [[HwAds instance] hwAdsEventByPlacementId:@"mopub" hwSdkState:showFailed isReward:NO Channel:@"Mopub"];
         }
         else {
             MPLogAdEvent([MPLogEvent adShowSuccessForAdapter:NSStringFromClass(self.class)], self.adUnitId);
@@ -75,6 +78,7 @@
 
 - (void)interstitialDidLoadAd:(id<MPInterstitialViewController>)interstitial
 {
+    [[HwAds instance] hwAdsEventByPlacementId:@"mopub" hwSdkState:requestSuccess isReward:NO Channel:@"Mopub"];
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.adUnitId);
     [self.delegate interstitialCustomEvent:self didLoadAd:self.interstitial];
 }
@@ -83,7 +87,7 @@
 {
     NSString * message = [NSString stringWithFormat:@"Failed to load creative:\n%@", self.delegate.configuration.adResponseHTMLString];
     NSError * error = [NSError errorWithCode:MOPUBErrorAdapterFailedToLoadAd localizedDescription:message];
-
+    [[HwAds instance] hwAdsEventByPlacementId:@"mopub" hwSdkState:requestFailed isReward:NO Channel:@"Mopub"];
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], self.adUnitId);
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
@@ -114,7 +118,8 @@
 - (void)interstitialDidDisappear:(id<MPInterstitialViewController>)interstitial
 {
     [self.delegate interstitialCustomEventDidDisappear:self];
-
+    [[HwAds instance] hwAdsEventByPlacementId:@"mopub" hwSdkState:showSuccess isReward:NO Channel:@"Mopub"];
+    [[HwAds instance] hwAdsEventByPlacementId:@"mopub" hwSdkState:AdClose isReward:NO Channel:@"Mopub"];
     // Deallocate the interstitial as we don't need it anymore. If we don't deallocate the interstitial after dismissal,
     // then the html in the webview will continue to run which could lead to bugs such as continuing to play the sound of an inline
     // video since the app may hold onto the interstitial ad controller. Moreover, we keep an array of controllers around as well.
@@ -123,6 +128,7 @@
 
 - (void)interstitialDidReceiveTapEvent:(id<MPInterstitialViewController>)interstitial
 {
+    [[HwAds instance] hwAdsEventByPlacementId:@"mopub" hwSdkState:click isReward:NO Channel:@"Mopub"];
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
 }
 

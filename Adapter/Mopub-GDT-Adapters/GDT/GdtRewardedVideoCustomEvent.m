@@ -16,7 +16,7 @@
 
 
 #import "GdtRewardedVideoCustomEvent.h"
-
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 #import "GDTRewardVideoAd.h"
 
 @interface GdtRewardedVideoCustomEvent () <GDTRewardedVideoAdDelegate>
@@ -29,7 +29,7 @@
 
 @implementation GdtRewardedVideoCustomEvent
 
-BOOL *isRewardLoaded;
+//BOOL *isRewardLoaded;
 
 - (void)initializeSdkWithParameters:(NSDictionary *)parameters
 {
@@ -57,15 +57,17 @@ BOOL *isRewardLoaded;
     NSString * appId = info[@"appId"];
     self.placementId = info[@"placementId"];
     
-    self.gdtRewardVideoAd = [[GDTRewardVideoAd alloc] initWithAppId:appId placementId:self.placementId];
+//    self.gdtRewardVideoAd = [[GDTRewardVideoAd alloc] initWithAppId:appId placementId:self.placementId];
+    self.gdtRewardVideoAd = [[GDTRewardVideoAd alloc]initWithPlacementId:self.placementId];
     self.gdtRewardVideoAd.delegate = self;
     if(appId==nil){
         NSError *error = [NSError errorWithDomain:MoPubRewardedVideoAdsSDKDomain code:MPRewardedVideoAdErrorInvalidAdUnitID userInfo:@{NSLocalizedDescriptionKey: @"Custom event class data did not contain appId.", NSLocalizedRecoverySuggestionErrorKey: @"Update your MoPub custom event class data to contain a valid Sigmob Appid."}];
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], nil);
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:YES Channel:@"GDT"];
         [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
         return;
     }
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:YES Channel:@"GDT"];
     [self.gdtRewardVideoAd loadAd];
 }
 
@@ -83,12 +85,14 @@ BOOL *isRewardLoaded;
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:@"GDT" forKey:@"hwvideotype"];
         [defaults synchronize];
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:YES Channel:@"GDT"];
         [self.delegate rewardedVideoWillAppearForCustomEvent:self];
         [self.gdtRewardVideoAd showAdFromRootViewController:viewController];
         [self.delegate rewardedVideoDidAppearForCustomEvent:self];
     }else{
         NSError *error = [NSError errorWithCode:MPRewardedVideoAdErrorNoAdsAvailable localizedDescription:@"Failed to show gdt rewarded video: gdt now claims that there is no available video ad."];
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.placementId);
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:YES Channel:@"GDT"];
         [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
     }
 }
@@ -111,8 +115,8 @@ BOOL *isRewardLoaded;
 
 - (void)gdt_rewardVideoAdDidLoad:(GDTRewardVideoAd *)rewardedVideoAd:(NSString *)placementId{
     NSLog(@"gdt_rewardVideoAdDidLoad");
-    NSLog(@"hlyLog:GTDrewardVideo加载成功");
     self.rewaredLoaded = true;
+   
     [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
 }
 
@@ -123,7 +127,7 @@ BOOL *isRewardLoaded;
  */
 - (void)gdt_rewardVideoAdDidLoad:(GDTRewardVideoAd *)rewardedVideoAd{
     NSLog(@"gdt_rewardVideoAdDidLoad 1111111");
-    NSLog(@"hlyLog:GTDrewardVideo加载成功");
+//    NSLog(@"hlyLog:GTDrewardVideo加载成功");
 }
 
 /**
@@ -133,6 +137,7 @@ BOOL *isRewardLoaded;
 - (void)gdt_rewardVideoAdVideoDidLoad:(GDTRewardVideoAd *)rewardedVideoAd{
     NSLog(@"gdt_rewardVideoAdDidLoad 222222");
     NSLog(@"hlyLog:GTDrewardVideo加载成功");
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestSuccess isReward:YES Channel:@"GDT"];
     self.rewaredLoaded = true;
     [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
 }
@@ -166,6 +171,7 @@ BOOL *isRewardLoaded;
 - (void)gdt_rewardVideoAdDidClose:(GDTRewardVideoAd *)rewardedVideoAd{
     self.rewaredLoaded = false;
     NSLog(@"hlyLog:GTDrewardVideo关闭");
+     [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:AdClose isReward:YES Channel:@"GDT"];
     [self.delegate rewardedVideoDidDisappearForCustomEvent:self];
 }
 
@@ -175,6 +181,7 @@ BOOL *isRewardLoaded;
  @param rewardedVideoAd GDTRewardVideoAd 实例
  */
 - (void)gdt_rewardVideoAdDidClicked:(GDTRewardVideoAd *)rewardedVideoAd{
+     [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:YES Channel:@"GDT"];
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self];
 }
 
@@ -186,6 +193,7 @@ BOOL *isRewardLoaded;
 - (void)gdt_rewardVideoAd:(GDTRewardVideoAd *)rewardedVideoAd didFailWithError:(NSError *)error{
     NSLog(@"Error %d",error.code);
     NSLog(@"hlyLog:GTDrewardVideo加载失败");
+     [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:YES Channel:@"GDT"];
     self.rewaredLoaded = false;
     [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:nil];
 }
@@ -196,8 +204,9 @@ BOOL *isRewardLoaded;
  @param rewardedVideoAd GDTRewardVideoAd 实例
  */
 - (void)gdt_rewardVideoAdDidRewardEffective:(GDTRewardVideoAd *)rewardedVideoAd{
-    MPRewardedVideoReward *reward = [[MPRewardedVideoReward alloc] initWithCurrencyType:kMPRewardedVideoRewardCurrencyTypeUnspecified amount:@(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
-    [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:reward];
+    MPRewardedVideoReward *rewardd = [[MPRewardedVideoReward alloc] initWithCurrencyType:kMPRewardedVideoRewardCurrencyTypeUnspecified amount:@(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
+     [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:reward isReward:YES Channel:@"GDT"];
+    [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:rewardd];
 }
 
 /**
@@ -206,6 +215,7 @@ BOOL *isRewardLoaded;
  @param rewardedVideoAd GDTRewardVideoAd 实例
  */
 - (void)gdt_rewardVideoAdDidPlayFinish:(GDTRewardVideoAd *)rewardedVideoAd{
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showSuccess isReward:YES Channel:@"GDT"];
     //[self.delegate rewardedVideo];
 }
 @end

@@ -3,6 +3,7 @@
 #import <MTGSDKReward/MTGRewardAdManager.h>
 #import <MTGSDKReward/MTGBidRewardAdManager.h>
 #import "MintegralAdapterConfiguration.h"
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 #if __has_include(<MoPubSDKFramework/MoPub.h>)
     #import <MoPubSDKFramework/MoPub.h>
 #else
@@ -68,7 +69,7 @@
         [MTGRewardAdManager sharedInstance].playVideoMute = [MintegralAdapterConfiguration isMute];
         [[MTGRewardAdManager sharedInstance] loadVideoWithPlacementId:placementId unitId:unitId delegate:self];
     }
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:request isReward:YES Channel:@"Mintegral"];
     MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], self.adUnitId);
 }
 
@@ -88,7 +89,7 @@
         NSString *customerId = [self.delegate customerIdForRewardedVideoCustomEvent:self];
         
         if ([[MTGRewardAdManager sharedInstance] respondsToSelector:@selector(showVideoWithPlacementId:unitId:withRewardId:userId:delegate:viewController:)]) {
-            
+            [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:show isReward:YES Channel:@"Mintegral"];
             MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.adUnitId);
             MPLogAdEvent([MPLogEvent adWillAppearForAdapter:NSStringFromClass(self.class)], self.adUnitId);
             
@@ -102,7 +103,7 @@
         }
     } else {
         NSError *error = [NSError errorWithDomain:MoPubRewardedVideoAdsSDKDomain code:MPRewardedVideoAdErrorNoAdsAvailable userInfo:nil];
-        
+        [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:showFailed isReward:YES Channel:@"Mintegral"];
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.adUnitId);
         [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
     }
@@ -128,18 +129,21 @@
 #pragma mark GADRewardBasedVideoAdDelegate
 - (void)onVideoAdLoadSuccess:(NSString *)placementId unitId:(NSString *)unitId {
     NSLog(@"hlyLog:Mintergral Reward加载成功");
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:requestSuccess isReward:YES Channel:@"Mintegral"];
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.adUnitId);
     [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
 }
 
 - (void)onVideoAdLoadFailed:(NSString *)placementId unitId:(NSString *)unitId error:(NSError *)error {
     NSLog(@"hlyLog:Mintergral Reward加载失败");
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:requestFailed isReward:YES Channel:@"Mintegral"];
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], nil);
     [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
 }
 
 - (void)onVideoAdShowSuccess:(NSString *)placementId unitId:(NSString *)unitId {
     MPLogAdEvent([MPLogEvent adShowSuccessForAdapter:NSStringFromClass(self.class)], self.adUnitId);
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:showSuccess isReward:YES Channel:@"Mintegral"];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:@"Mintegral" forKey:@"hwvideotype"];
     [defaults synchronize];
@@ -155,13 +159,14 @@
 
 - (void)onVideoAdShowFailed:(NSString *)placementId unitId:(NSString *)unitId withError:(NSError *)error {
     MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.adUnitId);
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:showFailed isReward:YES Channel:@"Mintegral"];
     [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
 }
 
 - (void)onVideoAdClicked:(NSString *)placementId unitId:(NSString *)unitId {
     MPLogInfo(@"onVideoAdClicked");
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], self.adUnitId);
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:click isReward:YES Channel:@"Mintegral"];
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self];
     [self.delegate rewardedVideoWillLeaveApplicationForCustomEvent:self];
     
@@ -173,9 +178,11 @@
 }
 
 - (void)onVideoAdDismissed:(NSString *)placementId unitId:(NSString *)unitId withConverted:(BOOL)converted withRewardInfo:(MTGRewardAdInfo *)rewardInfo {    NSLog(@"hlyLog:Mintergral Reward关闭");
+    [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:AdClose isReward:YES Channel:@"Mintegral"];
     if (rewardInfo) {
-        MPRewardedVideoReward *reward = [[MPRewardedVideoReward alloc] initWithCurrencyType:rewardInfo.rewardName amount:[NSNumber numberWithInteger:rewardInfo.rewardAmount]];
-        [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:reward];
+        MPRewardedVideoReward *rewardd = [[MPRewardedVideoReward alloc] initWithCurrencyType:rewardInfo.rewardName amount:[NSNumber numberWithInteger:rewardInfo.rewardAmount]];
+        [[HwAds instance] hwAdsEventByPlacementId:self.adUnitId hwSdkState:reward isReward:YES Channel:@"Mintegral"];
+        [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:rewardd];
         
     }else{
         MPLogInfo(@"The rewarded video was not watched until completion. The user will not get rewarded.");

@@ -10,7 +10,7 @@
 
 #import "GDTUnifiedInterstitialAd.h"
 #import "GdtInterstitialCustomEvent.h"
-
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 
 #if __has_include("MoPub.h")
 #import "MoPub.h"
@@ -51,7 +51,7 @@
     GDTUnifiedInterstitialAd *mInterstitial = [[GDTUnifiedInterstitialAd alloc] initWithAppId:appId placementId:self.placementId];
     mInterstitial.delegate = self;
     self.gdtInterstitial = mInterstitial;
-    
+    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:NO Channel:@"GDT"];
 //    self.gdtInterstitial.videoMuted = self.videoMutedSwitch.on; // 设置视频是否Mute
 //    self.gdtInterstitial.videoAutoPlayOnWWAN = self.videoAutoPlaySwitch.on; // 设置视频是否在非 WiFi 网络自动播放
 //    self.gdtInterstitial.maxVideoDuration = (NSInteger)self.maxVideoDurationSlider.value;  //如果需要设置视频最大时长，可以通过这个参数来进行设置
@@ -66,6 +66,7 @@
                                  andSuggestion:@""];
 
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.placementId);
+        [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"GDT"];
         [self.delegate interstitialCustomEventDidExpire:self];
     } else {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -76,7 +77,7 @@
         
         MPLogAdEvent([MPLogEvent adWillAppearForAdapter:NSStringFromClass(self.class)], self.placementId);
         [self.delegate interstitialCustomEventWillAppear:self];
-        
+        [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:NO Channel:@"GDT"];
         [self.gdtInterstitial presentAdFromRootViewController:controller];
         MPLogAdEvent([MPLogEvent adDidAppearForAdapter:NSStringFromClass(self.class)], self.placementId);
         [self.delegate interstitialCustomEventDidAppear:self];
@@ -105,6 +106,7 @@
  */
 - (void)unifiedInterstitialSuccessToLoadAd:(GDTUnifiedInterstitialAd *)unifiedInterstitial{
     NSLog(@"hlyLog:GTDInterstitial加载成功");
+    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:requestSuccess isReward:NO Channel:@"GDT"];
     [self.delegate interstitialCustomEvent:self didLoadAd:self.gdtInterstitial];
 }
 
@@ -114,6 +116,7 @@
  */
 - (void)unifiedInterstitialFailToLoadAd:(GDTUnifiedInterstitialAd *)unifiedInterstitial error:(NSError *)error{
     NSLog(@"hlyLog:GTDInterstitial加载失败");
+    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:NO Channel:@"GDT"];
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
 
@@ -146,6 +149,7 @@
  *  插屏2.0广告展示结束回调该函数
  */
 - (void)unifiedInterstitialDidDismissScreen:(GDTUnifiedInterstitialAd *)unifiedInterstitial{
+    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:showSuccess isReward:NO Channel:@"GDT"];
     [self.delegate interstitialCustomEventDidDisappear:self];
 }
 
@@ -167,6 +171,7 @@
  *  插屏2.0广告点击回调
  */
 - (void)unifiedInterstitialClicked:(GDTUnifiedInterstitialAd *)unifiedInterstitial{
+    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:NO Channel:@"GDT"];
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
 }
 
@@ -196,6 +201,7 @@
  */
 - (void)unifiedInterstitialAdDidDismissFullScreenModal:(GDTUnifiedInterstitialAd *)unifiedInterstitial{
     NSLog(@"hlyLog:GTDInterstitial关闭");
+    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:AdClose isReward:NO Channel:@"GDT"];
     [self.delegate interstitialCustomEventDidDisappear:self];
 }
 

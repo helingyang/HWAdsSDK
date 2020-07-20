@@ -7,6 +7,7 @@
 
 #import "UnityAdsInterstitialCustomEvent.h"
 #import "UnityAdsInstanceMediationSettings.h"
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 #import "UnityRouter.h"
 #if __has_include("MoPub.h")
     #import "MPLogging.h"
@@ -52,6 +53,7 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
     [UnityAdsAdapterConfiguration updateInitializationParameters:info];
 
     [[UnityRouter sharedRouter] requestVideoAdWithGameId:gameId placementId:self.placementId delegate:self];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:NO Channel:@"Unityads"];
     MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], [self getAdNetworkId]);
 }
 
@@ -75,11 +77,12 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
     if ([self hasAdAvailable]) {
         MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
         [[UnityRouter sharedRouter] presentVideoAdFromViewController:viewController customerId:nil placementId:self.placementId settings:nil delegate:self];
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:NO Channel:@"Unityads"];
     } else {
         NSError *error = [self createErrorWith:@"Unity Ads failed to load failed to show Unity Interstitial"
                                  andReason:@"There is no available video ad."
                              andSuggestion:@""];
-        
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"Unityads"];
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
         [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
     }
@@ -104,6 +107,7 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
 - (void)unityAdsReady:(NSString *)placementId
 {
     NSLog(@"hlyLog:Unity Interstitial加载成功");
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestSuccess isReward:NO Channel:@"Unityads"];
     if (self.loadRequested) {
         [self.delegate interstitialCustomEvent:self didLoadAd:placementId];
         MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
@@ -113,11 +117,12 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
 
 - (void)unityAdsDidError:(UnityAdsError)error withMessage:(NSString *)message
 {
-    NSLog(@"hlyLog:Unity Interstitial加载失败");
+    
     NSError *errorLoad = [self createErrorWith:@"Unity Ads failed to load an ad"
                                  andReason:@""
                              andSuggestion:@""];
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:errorLoad];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:NO Channel:@"Unityads"];
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:errorLoad], [self getAdNetworkId]);
 }
 
@@ -141,17 +146,27 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
 
     [self.delegate interstitialCustomEventDidDisappear:self];
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
+    
+    if (state == kUnityAdsFinishStateCompleted) {
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showSuccess isReward:NO Channel:@"Unityads"];
+    }else{
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"Unityads"];
+    }
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:AdClose isReward:NO Channel:@"Unityads"];
 }
 
 - (void) unityAdsDidClick:(NSString *)placementId
 {
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:NO Channel:@"Unityads"];
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
 }
 
 - (void)unityAdsDidFailWithError:(NSError *)error
 {
+    NSLog(@"hlyLog:Unity Interstitial加载失败");
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:NO Channel:@"Unityads"];
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
 }
 

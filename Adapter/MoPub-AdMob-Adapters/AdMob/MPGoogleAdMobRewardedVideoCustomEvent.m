@@ -1,6 +1,7 @@
 #import "MPGoogleAdMobRewardedVideoCustomEvent.h"
 #import "GoogleAdMobAdapterConfiguration.h"
 #import <GoogleMobileAds/GoogleMobileAds.h>
+#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
 #if __has_include("MoPub.h")
 #import "MPLogging.h"
 #import "MPRewardedVideoError.h"
@@ -28,8 +29,8 @@
     
     // Cache the network initialization parameters
     [GoogleAdMobAdapterConfiguration updateInitializationParameters:info];
-    
     self.admobAdUnitId = [info objectForKey:@"adunit"];
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:request isReward:YES Channel:@"Admob"];
     if (self.admobAdUnitId == nil) {
         NSError *error =
         [NSError errorWithDomain:MoPubRewardedVideoAdsSDKDomain
@@ -38,6 +39,7 @@
         
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
         [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
+        [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:requestFailed isReward:YES Channel:@"Admob"];
         return;
     }
     
@@ -80,10 +82,13 @@
     [self.rewardedAd loadRequest:request completionHandler:^(GADRequestError *error){
       if (error) {
           NSLog(@"hlyLog:Google RewardedAd加载失败");
+          [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:requestFailed isReward:YES Channel:@"Admob"];
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
         [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
       } else {
+          NSLog(@"hlyLog:%@*****%@",info,adMarkup);
           NSLog(@"hlyLog:Google RewardedAd加载成功");
+          [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:requestSuccess isReward:YES Channel:@"Admob"];
         MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
         [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
       }
@@ -101,6 +106,7 @@
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:@"Admob" forKey:@"hwvideotype"];
         [defaults synchronize];
+        [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:show isReward:YES Channel:@"Admob"];
         [self.rewardedAd presentFromRootViewController:viewController delegate:self];
     } else {
         // We will send the error if the rewarded ad has already been presented.
@@ -109,6 +115,7 @@
                           code:MPRewardedVideoAdErrorNoAdReady
                           userInfo:@{NSLocalizedDescriptionKey : @"Rewarded ad is not ready to be presented."}];
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
+        [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:showFailed isReward:YES Channel:@"Admob"];
         [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
     }
 }
@@ -140,10 +147,16 @@
 - (void)rewardedAd:(GADRewardedAd *)rewardedAd userDidEarnReward:(GADAdReward *)reward {
     MPRewardedVideoReward *moPubReward =
     [[MPRewardedVideoReward alloc] initWithCurrencyType:reward.type amount:reward.amount];
+    [self toReward];
     [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:moPubReward];
 }
-
+-(void)toReward{
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:showSuccess isReward:YES Channel:@"Admob"];
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:reward isReward:YES Channel:@"Admob"];
+}
 - (void)rewardedAdDidPresent:(GADRewardedAd *)rewardedAd {
+    NSString *str = [[NSUserDefaults standardUserDefaults] objectForKey:@"HW_SCENETAG"];
+    NSLog(@"hlyLog:GoogleShow:%@",str);
     MPLogAdEvent([MPLogEvent adWillAppearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adShowSuccessForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adDidAppearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
@@ -154,8 +167,8 @@
 }
 
 - (void)rewardedAd:(GADRewardedAd *)rewardedAd didFailToPresentWithError:(NSError *)error {
-    
     MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:showFailed isReward:YES Channel:@"Admob"];
     [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
 }
 
@@ -163,7 +176,7 @@
     NSLog(@"hlyLog:Google RewardedAd关闭");
   MPLogAdEvent([MPLogEvent adWillDisappearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
   [self.delegate rewardedVideoWillDisappearForCustomEvent:self];
-
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:AdClose isReward:YES Channel:@"Admob"];
   MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
   [self.delegate rewardedVideoDidDisappearForCustomEvent:self];
 }

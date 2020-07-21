@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.1.0"
+  spec.version      = "0.1.33"
   spec.summary      = "用于请求HW广告,一键集成SDK"
 
   # This description is used to generate tags and improve search results.
@@ -91,64 +91,12 @@ Pod::Spec.new do |spec|
     
     #spec.source_files = 'SDK/**/*.{h,m}' 该路径下所有
     
-    #spec.source_files = 'SDK/*.{h,m}','Adapter/**/*.{h,m}'
+    spec.source_files = 'Adapter/**/*.{h,m}'
     
 
   # spec.public_header_files = "Classes/**/*.h"
 
-    spec.subspec 'Adapter' do |ss|
-        ss.subspec 'Adjust' do |ss1|
-        ss1.source_files = 'Adapter/Adjust/**/*.{h,m}'
-        end
-        ss.subspec 'mopubiOSSdk' do |ss7|
-        ss7.source_files = 'Adapter/mopub-ios-sdk/MoPubSDK/**/*.{h,m}'
-        ss7.resources = "Adapter/mopub-ios-sdk/MoPubSDK/Resources/*.png"
-        ss7.vendored_libraries = "Adapter/mopub-ios-sdk/MoPubSDK/Viewability/Avid/libAvid-mopub-3.6.1.a"
-        ss7.vendored_frameworks  = 'Adapter/mopub-ios-sdk/MoPubSDK/Viewability/MOAT/MPUBMoatMobileAppKit.framework'
-        end
-        ss.subspec 'AdMobAdapters' do |ss2|
-        ss2.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss2.source_files = 'Adapter/MoPub-AdMob-Adapters/**/*.{h,m}'
-        end
-        ss.subspec 'ApplovinAdapters' do |ss3|
-        ss3.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss3.source_files = 'Adapter/MoPub-Applovin-Adapters/**/*.{h,m}'
-        end
-        ss.subspec 'CSJAdapters' do |ss4|
-        ss4.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss4.source_files = 'Adapter/Mopub-CSJ-Adapters/**/*.{h,m}'
-        end
-        ss.subspec 'FacebookAdapters' do |ss5|
-        ss5.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss5.vendored_frameworks  = 'SDK/FBSDKCoreKit.framework','SDK/FBAudienceNetwork.framework'
-        ss5.source_files = 'Adapter/MoPub-FacebookAudienceNetwork-Adapters/**/*.{h,m}'
-        end
-        ss.subspec 'GDTAdapters' do |ss6|
-        ss6.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss6.source_files = 'Adapter/Mopub-GDT-Adapters/**/*.{h,m}'
-        end
-        
-        ss.subspec 'IronSourceAdapters' do |ss8|
-        ss8.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss8.source_files = 'Adapter/MoPub-IronSource-Adapters/**/*.{h,m}'
-        end
-        ss.subspec 'MintegralAdapters' do |ss9|
-        ss9.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss9.source_files = 'Adapter/MoPub-Mintegral-Adapters/**/*.{h,m}'
-        end
-        ss.subspec 'SigmobAdapters' do |ss10|
-        ss10.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss10.source_files = 'Adapter/Mopub-Sigmob-Adapters/**/*.{h,m}'
-        end
-        ss.subspec 'UnityAdsAdapters' do |ss11|
-        ss11.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss11.source_files = 'Adapter/MoPub-UnityAds-Adapters/**/*.{h,m}'
-        end
-        ss.subspec 'VungleAdapters' do |ss12|
-        ss12.dependency 'HWAdsSDK/Adapter/mopubiOSSdk'
-        ss12.source_files = 'Adapter/MoPub-Vungle-Adapters/**/*.{h,m}'
-        end
-    end
+    
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -160,7 +108,7 @@ Pod::Spec.new do |spec|
   #
 
   # spec.resource  = "icon.png"
-    #spec.resources = "Adapter/mopub-ios-sdk/MoPubSDK/Resources/*.png"
+    spec.resources = "Adapter/mopub-ios-sdk/MoPubSDK/Resources/*.png"
 
   # spec.preserve_paths = "FilesToSave", "MoreFilesToSave"
 
@@ -171,14 +119,14 @@ Pod::Spec.new do |spec|
   #  the lib prefix of their name.
   #
     #非系统框架
-    spec.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework','SDK/AppsFlyerFramework/AppsFlyerLib.framework'
+    #spec.vendored_frameworks  = 'SDK/HwFrameworkUpTest1.framework','SDK/AppsFlyerFramework/AppsFlyerLib.framework'
     #,'SDK/FBSDKCoreKit.framework','Adapter/mopub-ios-sdk/MoPubSDK/Viewability/MOAT/MPUBMoatMobileAppKit.framework'
     #,'SDK/FBAudienceNetwork.framework'
-    #spec.vendored_frameworks = "SDK/**/*.framework"
+    spec.vendored_frameworks = "SDK/**/*.framework"
     # 系统框架
     spec.frameworks = "AdSupport","AVFoundation","CoreGraphics","CoreLocation","CoreMedia","CoreTelephony","Foundation","MediaPlayer","MessageUI","QuartzCore","SafariServices","StoreKit","SystemConfiguration","UIKit","WebKit"
     #非系统静态库
-   #spec.vendored_libraries = "Adapter/mopub-ios-sdk/MoPubSDK/Viewability/Avid/libAvid-mopub-3.6.1.a"
+   spec.vendored_libraries = "Adapter/mopub-ios-sdk/MoPubSDK/Viewability/Avid/libAvid-mopub-3.6.1.a"
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

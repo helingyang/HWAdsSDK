@@ -15,8 +15,6 @@
 #import "MPRewardedVideoAdapter.h"
 #import "MPRewardedVideoReward.h"
 #import "MPRewardedVideoError.h"
-//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-#import <HwFrameworkUpTest1/HwAds.h>
 
 @interface MPMoPubRewardedVideoCustomEvent()
 
@@ -44,7 +42,7 @@
 
     self.interstitial = [[MPMRAIDInterstitialViewController alloc] initWithAdConfiguration:configuration];
     self.interstitial.delegate = self;
-    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:request isReward:YES Channel:@"Mopub"];
+
     [self.interstitial setCloseButtonStyle:MPInterstitialCloseButtonStyleAlwaysHidden];
     [self.interstitial startLoading];
 }
@@ -74,7 +72,7 @@
         __typeof__(self) strongSelf = weakSelf;
         if (strongSelf != nil) {
             MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(strongSelf.class) error:error], strongSelf.adUnitId);
-            [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:showFailed isReward:YES Channel:@"Mopub"];
+
             [strongSelf.delegate rewardedVideoDidFailToPlayForCustomEvent:strongSelf error:error];
         }
     };
@@ -85,7 +83,7 @@
         onShowError(error);
         return;
     }
-    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:show isReward:YES Channel:@"Mopub"];
+
     [self.interstitial presentInterstitialFromViewController:viewController complete:^(NSError * error) {
         if (error != nil) {
             onShowError(error);
@@ -106,7 +104,7 @@
 {
     NSLog(@"hlyLog:MoPub Reward加载成功");
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.adUnitId);
-    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:requestSuccess isReward:YES Channel:@"Mopub"];
+
     self.adAvailable = YES;
     [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
 }
@@ -129,7 +127,6 @@
     NSLog(@"hlyLog:MoPub Reward加载失败");
     NSString * message = [NSString stringWithFormat:@"Failed to load creative:\n%@", self.delegate.configuration.adResponseHTMLString];
     NSError * error = [NSError errorWithCode:MOPUBErrorAdapterFailedToLoadAd localizedDescription:message];
-    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:requestFailed isReward:YES Channel:@"Mopub"];
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], self.adUnitId);
 
     self.adAvailable = NO;
@@ -146,14 +143,13 @@
     NSLog(@"hlyLog:MoPub Reward关闭");
     self.adAvailable = NO;
     [self.delegate rewardedVideoDidDisappearForCustomEvent:self];
-    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:AdClose isReward:YES Channel:@"Mopub"];
+
     // Get rid of the interstitial view controller when done with it so we don't hold on longer than needed
     self.interstitial = nil;
 }
 
 - (void)interstitialDidReceiveTapEvent:(id<MPInterstitialViewController>)interstitial
 {
-    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:click isReward:YES Channel:@"Mopub"];
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self];
 }
 
@@ -165,8 +161,6 @@
 - (void)interstitialRewardedVideoEnded
 {
     MPLogInfo(@"MoPub rewarded video finished playing.");
-    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:reward isReward:YES Channel:@"Mopub"];
-    [[HwAds instance]hwAdsEventByPlacementId:@"mopub" hwSdkState:showSuccess isReward:YES Channel:@"Mopub"];
     [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:self.delegate.configuration.selectedReward];
 }
 

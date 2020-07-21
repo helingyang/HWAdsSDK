@@ -13,7 +13,8 @@
 #import "MPLogging.h"
 #endif
 #import <CoreLocation/CoreLocation.h>
-
+//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+#import <HwFrameworkUpTest1/HwAds.h>
 @interface MPGoogleAdMobInterstitialCustomEvent () <GADInterstitialDelegate>
 
 @property(nonatomic, strong) GADInterstitial *interstitial;
@@ -31,19 +32,18 @@
     self.admobAdUnitId = [info objectForKey:@"adUnitID"];
     self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:self.admobAdUnitId];
     self.interstitial.delegate = self;
-    
-    GADRequest *request = [GADRequest request];
+    GADRequest *requestt = [GADRequest request];
     
     if ([self.localExtras objectForKey:@"contentUrl"] != nil) {
         NSString *contentUrl = [self.localExtras objectForKey:@"contentUrl"];
         if ([contentUrl length] != 0) {
-            request.contentURL = contentUrl;
+            requestt.contentURL = contentUrl;
         }
     }
 
     CLLocation *location = self.delegate.location;
     if (location) {
-        [request setLocationWithLatitude:location.coordinate.latitude
+        [requestt setLocationWithLatitude:location.coordinate.latitude
                                longitude:location.coordinate.longitude
                                 accuracy:location.horizontalAccuracy];
     }
@@ -51,7 +51,7 @@
     // Here, you can specify a list of device IDs that will receive test ads.
     // Running in the simulator will automatically show test ads.
     if ([self.localExtras objectForKey:@"testDevices"]) {
-      request.testDevices = self.localExtras[@"testDevices"];
+      requestt.testDevices = self.localExtras[@"testDevices"];
     }
     if ([self.localExtras objectForKey:@"tagForChildDirectedTreatment"]) {
       [GADMobileAds.sharedInstance.requestConfiguration tagForChildDirectedTreatment:self.localExtras[@"tagForChildDirectedTreatment"]];
@@ -61,7 +61,7 @@
        tagForUnderAgeOfConsent:self.localExtras[@"tagForUnderAgeOfConsent"]];
     }
 
-    request.requestAgent = @"MoPub";
+    requestt.requestAgent = @"MoPub";
     
     // Consent collected from the MoPub’s consent dialogue should not be used to set up Google's
     // personalization preference. Publishers should work with Google to be GDPR-compliant.
@@ -71,13 +71,14 @@
     if (npaValue.length > 0) {
         GADExtras *extras = [[GADExtras alloc] init];
         extras.additionalParameters = @{@"npa": npaValue};
-        [request registerAdNetworkExtras:extras];
+        [requestt registerAdNetworkExtras:extras];
     }
     
     // Cache the network initialization parameters
     [GoogleAdMobAdapterConfiguration updateInitializationParameters:info];
     MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], [self getAdNetworkId]);
-    [self.interstitial loadRequest:request];
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:request isReward:NO Channel:@"Admob"];
+    [self.interstitial loadRequest:requestt];
 }
 
 - (void)showInterstitialFromRootViewController:(UIViewController *)rootViewController {
@@ -85,7 +86,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:@"Admob" forKey:@"hwintertype"];
     [defaults synchronize];
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:show isReward:NO Channel:@"Admob"];
     [self.interstitial presentFromRootViewController:rootViewController];
 }
 
@@ -100,14 +101,17 @@
 #pragma mark - GADInterstitialDelegate
 
 - (void)interstitialDidReceiveAd:(GADInterstitial *)interstitial {
+//    NSLog(@"hlyLog:Google InterstitialAd%@",interstitial.adUnitID);
     NSLog(@"hlyLog:Google InterstitialAd加载成功");
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:requestSuccess isReward:NO Channel:@"Admob"];
     [self.delegate interstitialCustomEvent:self didLoadAd:self];
 }
 
 - (void)interstitial:(GADInterstitial *)interstitial
 didFailToReceiveAdWithError:(GADRequestError *)error {
     NSLog(@"hlyLog:Google InterstitialAd加载失败");
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:requestFailed isReward:NO Channel:@"Admob"];
     NSString *failureReason = [NSString stringWithFormat: @"Google AdMob Interstitial failed to load with error: %@", error.localizedDescription];
     NSError *mopubError = [NSError errorWithCode:MOPUBErrorAdapterInvalid localizedDescription:failureReason];
     
@@ -117,7 +121,6 @@ didFailToReceiveAdWithError:(GADRequestError *)error {
 }
 
 - (void)interstitialWillPresentScreen:(GADInterstitial *)interstitial {
-    
     MPLogAdEvent(MPLogEvent.adShowSuccess, self.admobAdUnitId);
     MPLogAdEvent([MPLogEvent adWillAppearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adShowSuccessForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
@@ -134,12 +137,15 @@ didFailToReceiveAdWithError:(GADRequestError *)error {
 
 - (void)interstitialDidDismissScreen:(GADInterstitial *)ad {
     NSLog(@"hlyLog:Google InterstitialAd关闭");
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:AdClose isReward:NO Channel:@"Admob"];
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
     [self.delegate interstitialCustomEventDidDisappear:self];
 }
 
 - (void)interstitialWillLeaveApplication:(GADInterstitial *)ad {
+    //将要离开app
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
+    [[HwAds instance] hwAdsEventByPlacementId:self.admobAdUnitId hwSdkState:click isReward:NO Channel:@"Admob"];
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
     [self.delegate interstitialCustomEventWillLeaveApplication:self];
     [self.delegate trackClick];

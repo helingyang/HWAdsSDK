@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger, AdMobAdapterErrorCode) {
     // These should correspond to the required parameters checked in
     // `initializeNetworkWithConfiguration:complete:`
     NSString * appId = parameters[kAdMobApplicationIdKey];
-    
+//    NSLog(@"hlyLogGoogle:%@",parameters);
     if (appId != nil) {
         NSDictionary * configuration = @{ kAdMobApplicationIdKey: appId };
         [GoogleAdMobAdapterConfiguration setCachedInitializationParameters:configuration];
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, AdMobAdapterErrorCode) {
 #pragma mark - MPAdapterConfiguration
 
 - (NSString *)adapterVersion {
-    return @"7.57.0.0";
+    return @"7.59.0.0";
 }
 
 - (NSString *)biddingToken {
@@ -52,12 +52,13 @@ typedef NS_ENUM(NSInteger, AdMobAdapterErrorCode) {
 }
 
 - (NSString *)networkSdkVersion {
-    return @"7.57.0";
+    return @"7.59.0";
 }
 
 - (void)initializeNetworkWithConfiguration:(NSDictionary<NSString *, id> *)configuration
                                   complete:(void(^)(NSError *))complete {
 
+//     NSLog(@"hlyLogGoogle:%@",configuration);
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         dispatch_async(dispatch_get_main_queue(), ^{

@@ -8,6 +8,8 @@
 #import "UnityAdsRewardedVideoCustomEvent.h"
 #import "UnityAdsInstanceMediationSettings.h"
 #import "UnityAdsAdapterConfiguration.h"
+//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+#import <HwFrameworkUpTest1/HwAds.h>
 #import "UnityRouter.h"
 #if __has_include("MoPub.h")
     #import "MPRewardedVideoReward.h"
@@ -67,7 +69,7 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
         return;
     }
-
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:YES Channel:@"Unityads"];
     [[UnityRouter sharedRouter] requestVideoAdWithGameId:gameId placementId:self.placementId delegate:self];
     MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], [self getAdNetworkId]);
 }
@@ -86,11 +88,12 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
 
         MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
         [[UnityRouter sharedRouter] presentVideoAdFromViewController:viewController customerId:customerId placementId:self.placementId settings:settings delegate:self];
-
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:YES Channel:@"Unityads"];
         MPLogAdEvent([MPLogEvent adShowSuccessForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
     } else {
         NSError *error = [NSError errorWithDomain:MoPubRewardedVideoAdsSDKDomain code:MPRewardedVideoAdErrorNoAdsAvailable userInfo:nil];
         [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:YES Channel:@"Unityads"];
          MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
     }
 }
@@ -115,13 +118,14 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
 - (void)unityAdsReady:(NSString *)placementId
 {
     NSLog(@"hlyLog:Unity Rewarded加载成功");
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestSuccess isReward:YES Channel:@"Unityads"];
     [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
 }
 
 - (void)unityAdsDidError:(UnityAdsError)error withMessage:(NSString *)message
 {
-    NSLog(@"hlyLog:Unity Rewarded加载失败");
+    
     NSString* unityErrorMessage;
     switch (error) {
         case kUnityAdsErrorNotInitialized:
@@ -170,6 +174,7 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
     }
     NSError *adapterError = [NSError errorWithDomain:MoPubRewardedVideoAdsSDKDomain code:MPRewardedVideoAdErrorUnknown userInfo:@{NSLocalizedDescriptionKey: unityErrorMessage}];
     [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:adapterError];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:YES Channel:@"Unityads"];
      MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:adapterError], [self getAdNetworkId]);
 }
 
@@ -188,9 +193,14 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
 {
     NSLog(@"hlyLog:Unity Rewarded关闭");
     if (state == kUnityAdsFinishStateCompleted) {
-        MPRewardedVideoReward *reward = [[MPRewardedVideoReward alloc] initWithCurrencyType:kMPRewardedVideoRewardCurrencyTypeUnspecified amount:@(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
-        [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:reward];
+        MPRewardedVideoReward *rewardd = [[MPRewardedVideoReward alloc] initWithCurrencyType:kMPRewardedVideoRewardCurrencyTypeUnspecified amount:@(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showSuccess isReward:YES Channel:@"Unityads"];
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:reward isReward:YES Channel:@"Unityads"];
+        [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:rewardd];
+    }else{
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:YES Channel:@"Unityads"];
     }
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:AdClose isReward:YES Channel:@"Unityads"];
     [self.delegate rewardedVideoWillDisappearForCustomEvent:self];
     [self.delegate rewardedVideoDidDisappearForCustomEvent:self];
 }
@@ -198,12 +208,15 @@ static NSString *const kUnityAdsOptionZoneIdKey = @"zoneId";
 - (void) unityAdsDidClick:(NSString *)placementId
 {
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:YES Channel:@"Unityads"];
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
 }
 
 - (void)unityAdsDidFailWithError:(NSError *)error
 {
+    NSLog(@"hlyLog:Unity Rewarded加载失败");
     [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
+    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:YES Channel:@"Unityads"];
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
 }
 

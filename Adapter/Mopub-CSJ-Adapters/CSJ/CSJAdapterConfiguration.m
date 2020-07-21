@@ -60,7 +60,6 @@ typedef NS_ENUM(NSInteger, CSJAdapterErrorCode) {
 
 - (void)initializeNetworkWithConfiguration:(NSDictionary<NSString *,id> *)configuration complete:(void (^)(NSError * _Nullable))complete{
     NSString * appId = configuration[@"appId"];
-    NSLog(@"hlyLog:CSJ configuration init方法");
     if (appId == nil) {
         NSError * error = [NSError errorWithDomain:kAdapterErrorDomain code:CSJAdapterErrorCodeMissingAppId userInfo:@{ NSLocalizedDescriptionKey: @"Missing the appId parameter when configuring your network in the MoPub website." }];
         MPLogEvent([MPLogEvent error:error message:nil]);

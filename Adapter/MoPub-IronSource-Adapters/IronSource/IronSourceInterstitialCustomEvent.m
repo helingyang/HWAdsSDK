@@ -4,6 +4,8 @@
 
 #import "IronSourceInterstitialCustomEvent.h"
 #import "IronSourceAdapterConfiguration.h"
+//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+#import <HwFrameworkUpTest1/HwAds.h>
 #if __has_include("MoPub.h")
     #import "MPLogging.h"
     #import "MoPub.h"
@@ -58,6 +60,7 @@
             // Cache the initialization parameters
             [IronSourceAdapterConfiguration updateInitializationParameters:info];
             [[IronSourceManager sharedManager] initIronSourceSDKWithAppKey:appKey forAdUnits:[NSSet setWithObject:@[IS_INTERSTITIAL]]];
+            [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:request isReward:NO Channel:@"Ironsource"];
             [self loadInterstitial:self.instanceId];
         } else {
             MPLogInfo(@"IronSource Interstitial initialization with empty or nil appKey for instance @s",
@@ -66,13 +69,13 @@
             NSError *error = [IronSourceUtils createErrorWith:@"IronSource adapter failed to request interstitial"
                                          andReason:@"ApplicationKey parameter is missing"
                                      andSuggestion:@"Make sure that 'applicationKey' server parameter is added"];
-            
+            [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:requestFailed isReward:NO Channel:@"Ironsource"];
             MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
             [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
         }
     } @catch (NSException *exception) {
         MPLogInfo(@"IronSource Interstitial initialization with error: %@", exception);
-
+        [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:requestFailed isReward:NO Channel:@"Ironsource"];
         NSError *error = [NSError errorWithDomain:@"MoPubInterstitialSDKDomain" code:MOPUBErrorAdapterInvalid userInfo:@{NSLocalizedDescriptionKey: @"Custom event class Interstitial error.", NSLocalizedRecoverySuggestionErrorKey: @"Native Network or Custom Event adapter was configured incorrectly."}];
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error: error], [self getAdNetworkId]);
         [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
@@ -83,7 +86,7 @@
     MPLogInfo(@"IronSource is attempting to show interstitial ad for instance %@",
               [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:show isReward:NO Channel:@"Ironsource"];
     [[IronSourceManager sharedManager] presentInterstitialAdFromViewController:rootViewController instanceID:self.instanceId];
 }
 
@@ -106,6 +109,7 @@
     NSLog(@"hlyLog:IronSource Interstitial加载成功");
     MPLogInfo(@"IronSource interstitial did load for instance %@ (current instance %@)",
               instanceId, [self getAdNetworkId]);
+    [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:requestSuccess isReward:NO Channel:@"Ironsource"];
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], instanceId);
     [self.delegate interstitialCustomEvent:self didLoadAd:nil];
 }
@@ -118,6 +122,7 @@
     MPLogInfo(@"IronSource interstitial ad did fail to load with error: %@, instanceId: %@ (current instanceId is %@)",
               error.localizedDescription, instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], instanceId);
+    [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:requestFailed isReward:NO Channel:@"Ironsource"];
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
 
@@ -146,7 +151,8 @@
               instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adWillDisappearForAdapter:NSStringFromClass(self.class)], instanceId);
     [self.delegate interstitialCustomEventWillDisappear:self];
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:showSuccess isReward:NO Channel:@"Ironsource"];
+    [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:AdClose isReward:NO Channel:@"Ironsource"];
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], instanceId);
     [self.delegate interstitialCustomEventDidDisappear:self];
 }
@@ -160,6 +166,7 @@
     MPLogInfo(@"IronSource interstitial did fail to show for instance %@ (current instance %@)",
               instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], instanceId);
+    [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:showFailed isReward:NO Channel:@"Ironsource"];
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 
 }
@@ -171,6 +178,7 @@
     MPLogInfo(@"IronSource interstitial did click for instance %@ (current instance %@)",
               instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], instanceId);
+    [[HwAds instance] hwAdsEventByPlacementId:self.instanceId hwSdkState:click isReward:NO Channel:@"Ironsource"];
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
     [self.delegate interstitialCustomEventWillLeaveApplication:self];
 }

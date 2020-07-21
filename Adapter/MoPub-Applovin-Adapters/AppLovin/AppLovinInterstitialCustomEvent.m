@@ -1,6 +1,7 @@
 #import "AppLovinInterstitialCustomEvent.h"
 #import "AppLovinAdapterConfiguration.h"
-
+//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
+#import <HwFrameworkUpTest1/HwAds.h>
 #if __has_include("MoPub.h")
     #import "MPError.h"
     #import "MPLogging.h"
@@ -67,6 +68,7 @@ static NSObject *ALGlobalInterstitialAdsLock;
         [ALPrivacySettings setHasUserConsent: canCollectPersonalInfo];
     }
     
+    
     self.sdk = [self SDKFromCustomEventInfo: info];
     
     if (self.sdk == nil) {
@@ -131,12 +133,14 @@ static NSObject *ALGlobalInterstitialAdsLock;
             }
         }
     }
+    
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:request isReward:NO Channel:@"Applovin"];
 }
 
 - (void)showInterstitialFromRootViewController:(UIViewController *)rootViewController
 {
     MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
-
+   
     ALAd *preloadedAd;
     
     if ( [self isTokenEvent] && self.tokenAd != nil )
@@ -157,6 +161,7 @@ static NSObject *ALGlobalInterstitialAdsLock;
         self.interstitialAd.adDisplayDelegate = self;
         self.interstitialAd.adVideoPlaybackDelegate = self;
         [self.interstitialAd showAd: preloadedAd];
+         [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:show isReward:NO Channel:@"Applovin"];
     }
     else
     {
@@ -166,6 +171,7 @@ static NSObject *ALGlobalInterstitialAdsLock;
         
         [self.delegate interstitialCustomEvent: self didFailToLoadAdWithError: error];
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], [self getAdNetworkId]);
+        [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:showFailed isReward:NO Channel:@"Applovin"];
     }
 }
 
@@ -174,6 +180,7 @@ static NSObject *ALGlobalInterstitialAdsLock;
 - (void)adService:(ALAdService *)adService didLoadAd:(ALAd *)ad
 {
     NSLog(@"hlyLog:Applovin interstitial加载成功");
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:requestSuccess isReward:NO Channel:@"Applovin"];
     if ( [self isTokenEvent] )
     {
         self.tokenAd = ad;
@@ -193,6 +200,7 @@ static NSObject *ALGlobalInterstitialAdsLock;
 - (void)adService:(ALAdService *)adService didFailToLoadAdWithError:(int)code
 {
     NSLog(@"hlyLog:Applovin interstitial加载失败");
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:requestFailed isReward:NO Channel:@"Applovin"];
     NSError *error = [NSError errorWithDomain: kALMoPubMediationErrorDomain
                                          code: [self toMoPubErrorCode: code]
                                      userInfo: nil];
@@ -217,10 +225,12 @@ static NSObject *ALGlobalInterstitialAdsLock;
     [self.delegate trackImpression];
 }
 
+
 - (void)ad:(ALAd *)ad wasHiddenIn:(UIView *)view
 {
     NSLog(@"hlyLog:Applovin interstitial关闭");
     MPLogAdEvent([MPLogEvent adWillDisappearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:AdClose isReward:NO Channel:@"Applovin"];
     [self.delegate interstitialCustomEventWillDisappear: self];
     
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
@@ -234,7 +244,7 @@ static NSObject *ALGlobalInterstitialAdsLock;
     [self.delegate interstitialCustomEventDidReceiveTapEvent: self];
     [self.delegate interstitialCustomEventWillLeaveApplication: self];
     [self.delegate trackClick];
-    
+    [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:click isReward:NO Channel:@"Applovin"];
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
 }
 
@@ -243,11 +253,18 @@ static NSObject *ALGlobalInterstitialAdsLock;
 - (void)videoPlaybackBeganInAd:(ALAd *)ad
 {
     MPLogAdEvent([MPLogEvent adShowSuccessForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
+    
 }
 
 - (void)videoPlaybackEndedInAd:(ALAd *)ad atPlaybackPercent:(NSNumber *)percentPlayed fullyWatched:(BOOL)wasFullyWatched
 {
     MPLogInfo(@"Interstitial video playback ended at playback percent: %lu", (unsigned long)percentPlayed.unsignedIntegerValue);
+    if (wasFullyWatched) {
+        [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:showSuccess isReward:NO Channel:@"Applovin"];
+    }else{
+        [[HwAds instance] hwAdsEventByPlacementId:self.zoneIdentifier hwSdkState:showFailed isReward:NO Channel:@"Applovin"];
+    }
+    
 }
 
 #pragma mark - Utility Methods

@@ -6,8 +6,6 @@
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import "FacebookRewardedVideoCustomEvent.h"
 #import "FacebookAdapterConfiguration.h"
-//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-#import <HwFrameworkUpTest1/HwAds.h>
 
 #if __has_include("MoPub.h")
     #import "MPLogging.h"
@@ -55,10 +53,8 @@
     self.fbRewardedVideoAd = [[FBRewardedVideoAd alloc] initWithPlacementID:[info objectForKey:@"placement_id"]];
     self.fbRewardedVideoAd.delegate = self;
     
-    self.fbPlacementId = [info objectForKey:@"placement_id"];
-    
     [FBAdSettings setMediationService:[FacebookAdapterConfiguration mediationString]];
-    
+
     // Load the advanced bid payload.
     if (adMarkup != nil) {
         MPLogInfo(@"Loading Facebook rewarded video ad markup for Advanced Bidding");
@@ -73,7 +69,6 @@
 
         MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], self.fbPlacementId);
     }
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:request isReward:YES Channel:@"Facebook"];
 }
 
 //Verify that the rewarded video is precached
@@ -91,13 +86,12 @@
                                  andSuggestion:@""];
 
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.fbPlacementId);
-        [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:showFailed isReward:YES Channel:@"Facebook"];
         [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
     }
     else
     {
         MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
-        [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:show isReward:YES Channel:@"Facebook"];
+
         MPLogAdEvent([MPLogEvent adWillAppearForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
         [self.delegate rewardedVideoWillAppearForCustomEvent:self];
 
@@ -138,7 +132,6 @@
 - (void)rewardedVideoAdDidClick:(FBRewardedVideoAd *)rewardedVideoAd
 {
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:click isReward:YES Channel:@"Facebook"];
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self ];
 }
 
@@ -152,10 +145,10 @@
  */
 - (void)rewardedVideoAdDidLoad:(FBRewardedVideoAd *)rewardedVideoAd
 {
-    NSLog(@"hlyLog:FB RewardedVideo加载成功 是否成功：%d",rewardedVideoAd.adValid);
-    [self.delegate rewardedVideoDidLoadAdForCustomEvent:self ];
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:requestSuccess isReward:YES Channel:@"Facebook"];
+    NSLog(@"hlyLog:FB RewardedVideo加载成功");
     [self cancelExpirationTimer];
+
+    [self.delegate rewardedVideoDidLoadAdForCustomEvent:self ];
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
     
     // introduce timer for 1 hour per expiration logic introduced by FB
@@ -170,6 +163,7 @@
                                      andSuggestion:@""];
             
             MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.fbPlacementId);
+
             strongSelf.fbRewardedVideoAd = nil;
         }
     }];
@@ -199,7 +193,6 @@
 {
     NSLog(@"hlyLog:FB RewardedVideo关闭");
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:AdClose isReward:YES Channel:@"Facebook"];
     [self.delegate rewardedVideoDidDisappearForCustomEvent:self];
 }
 
@@ -230,7 +223,7 @@
 {
      NSLog(@"hlyLog:FB RewardedVideo加载失败");
     [self cancelExpirationTimer];
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:requestFailed isReward:YES Channel:@"Facebook"];
+
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], nil);
     [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
 }
@@ -248,8 +241,6 @@
 {
     MPLogInfo(@"Facebook rewarded video ad has finished playing successfully");
     // Passing the reward type and amount as unspecified. Set the reward value in mopub UI.
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:showSuccess isReward:YES Channel:@"Facebook"];
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:reward isReward:YES Channel:@"Facebook"];
     [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:[[MPRewardedVideoReward alloc] initWithCurrencyAmount:@(kMPRewardedVideoRewardCurrencyAmountUnspecified)]];
 }
 

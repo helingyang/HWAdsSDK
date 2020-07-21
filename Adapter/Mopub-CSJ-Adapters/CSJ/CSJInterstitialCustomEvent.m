@@ -8,8 +8,7 @@
 #import <BUAdSDK/BUFullscreenVideoAd.h>
 #import "CSJInterstitialCustomEvent.h"
 #import "CSJAdapterConfiguration.h"
-//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-#import <HwFrameworkUpTest1/HwAds.h>
+
 #import <BUAdSDK/BUAdSDK.h>
 
 #if __has_include("MoPub.h")
@@ -55,7 +54,7 @@
     BUFullscreenVideoAd *fullScreenVideo = [[BUFullscreenVideoAd alloc] initWithSlotID:self.placementId];
     fullScreenVideo.delegate = self;
     _fullScreenVideo = fullScreenVideo;
-    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:NO Channel:@"CSJ"];
+    
 //    self.fullScreenVideo = [[BUFullscreenVideoAd alloc] initWithSlotID:self.placementId];
 ////    self.delegate = self;
 //    fullScreenVideo.delegate = self;
@@ -69,7 +68,6 @@
                                  andSuggestion:@""];
         
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.placementId);
-        [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"CSJ"];
         [self.delegate interstitialCustomEventDidExpire:self];
     } else {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -82,7 +80,7 @@
         [self.delegate interstitialCustomEventWillAppear:self];
         
         [self.fullScreenVideo showAdFromRootViewController:controller];
-        [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:NO Channel:@"CSJ"];
+        
         MPLogAdEvent([MPLogEvent adDidAppearForAdapter:NSStringFromClass(self.class)], self.placementId);
         [self.delegate interstitialCustomEventDidAppear:self];
     }
@@ -109,7 +107,6 @@
  */
 - (void)fullscreenVideoMaterialMetaAdDidLoad:(BUFullscreenVideoAd *)fullscreenVideoAd{
      NSLog(@"hlyLog:CSJ Interstitial加载成功");
-    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:requestSuccess isReward:NO Channel:@"CSJ"];
     [self.delegate interstitialCustomEvent:self didLoadAd:fullscreenVideoAd];
 }
 
@@ -119,7 +116,6 @@
  */
 - (void)fullscreenVideoAd:(BUFullscreenVideoAd *)fullscreenVideoAd didFailWithError:(NSError *_Nullable)error{
     NSLog(@"hlyLog:CSJ Interstitial加载失败");
-    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:NO Channel:@"CSJ"];
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
 
@@ -148,7 +144,6 @@
  This method is called when video ad is clicked.
  */
 - (void)fullscreenVideoAdDidClick:(BUFullscreenVideoAd *)fullscreenVideoAd{
-    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:NO Channel:@"CSJ"];
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
 }
 
@@ -164,7 +159,6 @@
  */
 - (void)fullscreenVideoAdDidClose:(BUFullscreenVideoAd *)fullscreenVideoAd{
     NSLog(@"hlyLog:CSJ Interstitial关闭");
-    [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:AdClose isReward:NO Channel:@"CSJ"];
     [self.delegate interstitialCustomEventDidDisappear:self];
 }
 
@@ -174,11 +168,6 @@
  @param error : the reason of error
  */
 - (void)fullscreenVideoAdDidPlayFinish:(BUFullscreenVideoAd *)fullscreenVideoAd didFailWithError:(NSError *_Nullable)error{
-    if (error) {
-        [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"CSJ"];
-    }else{
-        [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:showSuccess isReward:NO Channel:@"CSJ"];
-    }
     
 }
 

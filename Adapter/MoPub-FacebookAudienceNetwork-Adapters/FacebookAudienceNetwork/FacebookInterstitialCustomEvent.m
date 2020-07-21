@@ -8,8 +8,7 @@
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import "FacebookInterstitialCustomEvent.h"
 #import "FacebookAdapterConfiguration.h"
-//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-#import <HwFrameworkUpTest1/HwAds.h>
+
 #if __has_include("MoPub.h")
     #import "MoPub.h"
     #import "MPLogging.h"
@@ -71,7 +70,6 @@
 
         MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], self.fbPlacementId);
     }
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:request isReward:NO Channel:@"Facebook"];
 }
 
 - (void)showInterstitialFromRootViewController:(UIViewController *)controller {
@@ -81,7 +79,6 @@
                                  andSuggestion:@""];    
         
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.fbPlacementId);
-        [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:showFailed isReward:NO Channel:@"Facebook"];
         [self.delegate interstitialCustomEventDidExpire:self];
     } else {
         MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
@@ -96,7 +93,7 @@
         [defaults setObject:@"Facebook" forKey:@"hwintertype"];
         [defaults synchronize];
         [self.delegate interstitialCustomEventDidAppear:self];
-        [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:show isReward:NO Channel:@"Facebook"];
+        
         [self cancelExpirationTimer];
     }
 }
@@ -135,12 +132,11 @@
 
 - (void)interstitialAdDidLoad:(FBInterstitialAd *)interstitialAd
 {
-    
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:requestSuccess isReward:NO Channel:@"Facebook"];
-    MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
-    [self.delegate interstitialCustomEvent:self didLoadAd:interstitialAd];
     [self cancelExpirationTimer];
     NSLog(@"hlyLog:FBInterstitialAd加载成功");
+
+    MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
+    [self.delegate interstitialCustomEvent:self didLoadAd:interstitialAd];
     
     // introduce timer for 1 hour per expiration logic introduced by FB
     __weak __typeof__(self) weakSelf = self;
@@ -176,14 +172,13 @@
 {
      NSLog(@"hlyLog:FBInterstitialAd加载失败");
     [self cancelExpirationTimer];
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:requestFailed isReward:NO Channel:@"Facebook"];
+
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], self.fbPlacementId);
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
 
 - (void)interstitialAdDidClick:(FBInterstitialAd *)interstitialAd
 {
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:click isReward:NO Channel:@"Facebook"];
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
     [self.delegate trackClick];
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
@@ -192,8 +187,6 @@
 - (void)interstitialAdDidClose:(FBInterstitialAd *)interstitialAd
 {
      NSLog(@"hlyLog:FBInterstitial关闭");
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:showSuccess isReward:NO Channel:@"Facebook"];
-    [[HwAds instance] hwAdsEventByPlacementId:self.fbPlacementId hwSdkState:AdClose isReward:NO Channel:@"Facebook"];
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], self.fbPlacementId);
     [self.delegate interstitialCustomEventDidDisappear:self];
 }

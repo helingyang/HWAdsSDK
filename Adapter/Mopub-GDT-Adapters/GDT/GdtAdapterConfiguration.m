@@ -56,6 +56,7 @@ typedef NS_ENUM(NSInteger, VungleAdapterErrorCode) {
 - (void)initializeNetworkWithConfiguration:(NSDictionary<NSString *, id> *)configuration
                                   complete:(void(^)(NSError *))complete {
     NSString * appId = configuration[@"appId"];
+    NSLog(@"hlyLog:GTDConfiguration，init方法");
     if (appId == nil) {
         NSError * error = [NSError errorWithDomain:kAdapterErrorDomain code:GdtAdapterErrorCodeMissingAppId userInfo:@{ NSLocalizedDescriptionKey: @"Missing the appId parameter when configuring your network in the MoPub website." }];
         MPLogEvent([MPLogEvent error:error message:nil]);

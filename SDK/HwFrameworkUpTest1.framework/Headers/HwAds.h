@@ -28,74 +28,11 @@
 #define HW_REWARDID @"HW_REWARDID"
 #define HW_INTERID @"HW_INTERID"
 #define HW_BANNERID @"HW_BANNERID"
-#define HW_SCENETAG @"HW_SCENETAG"
 
 #ifndef HwAds_h
 #define HwAds_h
 
 #endif /* HwAds_h */
-
-typedef NS_ENUM(NSUInteger, HWSDKState)
-{
-    /**
-     * adjust初始化
-     */
-    adjustInit = 0,
-    /**
-     * 向gamebrain发出请求
-     */
-    gamebrainInit,
-    /**
-     * mopub初始化
-     */
-    mopubInit,
-    /**
-     * 请求广告
-     */
-    request,
-    /**
-     * 广告请求成功
-     */
-    requestSuccess,
-    
-    /**
-     * 广告请求失败
-     */
-    requestFailed,
-    /**
-     * 显示广告
-     */
-    show,
-    /**
-     * 广告显示成功
-     */
-    showSuccess,
-    /**
-     * 广告显示失败
-     */
-    showFailed,
-    /**
-     * 给奖励
-     */
-    reward,
-    /**
-     * 广告关闭  对应的字符串标记为close
-     */
-    AdClose,
-    /**
-     * 广告被触发
-     */
-    click,
-    /**
-     * 广告按钮被点击（激励）
-     */
-    isRewardLoaded,
-    /**
-     * 内购打点标签
-     */
-    HwPurchase,
-    
-};
 
 @protocol HwAdsDelegate <NSObject>
 @optional
@@ -186,13 +123,6 @@ typedef NS_ENUM(NSUInteger, HWSDKState)
 - (void)hwAnalyticsEvent:(NSString *)category
            action:(NSString *)action
            label:(NSString *)label;
-
-/// 打点新方法
-/// @param placementId 广告ID （若内购打点请将国家和金额用#拼接成字符串后传入，拼接规则：US#1.99        特别说明： 金额是转换成美金的价格）
-/// @param state 广告当前的状态（若为内购打点请传入HwPurchase状态）
-/// @param isReward 是否为激励广告（若为内购打点请传入NO）
-- (void)hwAdsEventByPlacementId:(NSString *)placementId hwSdkState:(HWSDKState)state isReward:(BOOL)isReward Channel:(NSString *)channel;
-
 @end
 
 

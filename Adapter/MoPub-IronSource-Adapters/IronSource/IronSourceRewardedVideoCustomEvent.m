@@ -5,8 +5,6 @@
 #import "IronSourceRewardedVideoCustomEvent.h"
 #import "IronSourceAdapterConfiguration.h"
 #import "IronSourceConstants.h"
-//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-#import <HwFrameworkUpTest1/HwAds.h>
 #if __has_include("MoPub.h")
     #import "MPLogging.h"
     #import "MoPub.h"
@@ -58,7 +56,7 @@
             
             MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error: error], self.instanceID);
             [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
-            [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:requestFailed isReward:YES Channel:@"Ironsource"];
+            
             return;
         }
         
@@ -71,13 +69,11 @@
         // Cache the initialization parameters
         [IronSourceAdapterConfiguration updateInitializationParameters:info];
         [[IronSourceManager sharedManager] initIronSourceSDKWithAppKey:appKey forAdUnits:[NSSet setWithObject:@[IS_REWARDED_VIDEO]]];
-        [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:request isReward:YES Channel:@"Ironsource"];
         [self loadRewardedVideo: self.instanceID];
     } @catch (NSException *exception) {
         MPLogInfo(@"IronSource Rewarded Video initialization with error: %@", exception);
         NSError *error = [NSError errorWithDomain:MoPubRewardedVideoAdsSDKDomain code:MOPUBErrorAdapterInvalid userInfo:@{NSLocalizedDescriptionKey: @"Custom event class Rewarded Video error.", NSLocalizedRecoverySuggestionErrorKey: @"Native Network or Custom Event adapter was configured incorrectly."}];
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error: error], self.instanceID);
-        [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:requestFailed isReward:YES Channel:@"Ironsource"];
         [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
     }
 }
@@ -93,7 +89,6 @@
     MPLogInfo(@"IronSource showRewardedVideo for instance %@",
               [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], [self getAdNetworkId]);
-    [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:show isReward:YES Channel:@"Ironsource"];
     [[IronSourceManager sharedManager] presentRewardedAdFromViewController:viewController
                                                                  instanceID:_instanceID];}
 
@@ -127,7 +122,6 @@
     MPLogInfo(@"IronSource RewardedVideo failed to show for instance %@ (current isntance %@)",
               instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], instanceId);
-    [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:showFailed isReward:YES Channel:@"Ironsource"];
     [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
 }
 
@@ -158,8 +152,6 @@
               instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adWillDisappearForAdapter:NSStringFromClass(self.class)], instanceId);
     [self.delegate rewardedVideoWillDisappearForCustomEvent:self];
-    [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:showSuccess isReward:YES Channel:@"Ironsource"];
-    [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:AdClose isReward:YES Channel:@"Ironsource"];
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], instanceId);
     [self.delegate rewardedVideoDidDisappearForCustomEvent:self];
 }
@@ -167,10 +159,9 @@
 - (void)rewardedVideoAdRewarded:(NSString *)instanceId {
     MPLogInfo(@"IronSource received reward for instance %@ (current instance %@)",
               instanceId, [self getAdNetworkId]);
-    MPRewardedVideoReward *rewardd = [[MPRewardedVideoReward alloc] initWithCurrencyType:kMPRewardedVideoRewardCurrencyTypeUnspecified amount: @(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
-    MPLogEvent([MPLogEvent adShouldRewardUserWithReward:rewardd]);
-    [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:reward isReward:YES Channel:@"Ironsource"];
-    [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:rewardd];
+    MPRewardedVideoReward *reward = [[MPRewardedVideoReward alloc] initWithCurrencyType:kMPRewardedVideoRewardCurrencyTypeUnspecified amount: @(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
+    MPLogEvent([MPLogEvent adShouldRewardUserWithReward:reward]);
+    [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:reward];
 }
 
 /*!
@@ -180,7 +171,6 @@
     MPLogInfo(@"IronSource RewardedVideo did click for instance %@ (current instance %@)",
               instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], instanceId);
-    [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:click isReward:YES Channel:@"Ironsource"];
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self];
     [self.delegate rewardedVideoWillLeaveApplicationForCustomEvent:self];
 }
@@ -191,7 +181,6 @@
     MPLogDebug(@"IronSource RewardedVideo load fail for instance %@ (current instance: %@)",
                instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error: error], instanceId);
-    [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:requestFailed isReward:YES Channel:@"Ironsource"];
     [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error: error];
 }
 
@@ -201,7 +190,6 @@
     MPLogInfo(@"IronSource RewardedVideo did load for instance %@ (current instance: %@)",
               instanceId, [self getAdNetworkId]);
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], instanceId);
-    [[HwAds instance] hwAdsEventByPlacementId:self.instanceID hwSdkState:requestSuccess isReward:YES Channel:@"Ironsource"];
     [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
 }
 @end

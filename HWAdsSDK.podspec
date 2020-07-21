@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.1.32"
+  spec.version      = "0.1.34"
   spec.summary      = "用于请求HW广告,一键集成SDK"
 
   # This description is used to generate tags and improve search results.
@@ -91,7 +91,7 @@ Pod::Spec.new do |spec|
     
     #spec.source_files = 'SDK/**/*.{h,m}' 该路径下所有
     
-    spec.source_files = 'SDK/*.{h,m}','Adapter/**/*.{h,m}'
+    spec.source_files = 'Adapter/**/*.{h,m}'
     
 
   # spec.public_header_files = "Classes/**/*.h"

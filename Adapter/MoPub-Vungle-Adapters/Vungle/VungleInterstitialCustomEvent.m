@@ -8,8 +8,6 @@
 #import <VungleSDK/VungleSDK.h>
 #import "VungleInterstitialCustomEvent.h"
 #import "VungleAdapterConfiguration.h"
-//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-#import <HwFrameworkUpTest1/HwAds.h>
 #if __has_include("MoPub.h")
     #import "MPLogging.h"
     #import "MoPub.h"
@@ -39,7 +37,7 @@
     
     // Cache the initialization parameters
     [VungleAdapterConfiguration updateInitializationParameters:info];
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:NO Channel:@"Vungle"];
+    
     MPLogAdEvent([MPLogEvent adLoadAttemptForAdapter:NSStringFromClass(self.class) dspCreativeId:nil dspName:nil], [self getPlacementID]);
     [[VungleRouter sharedRouter] requestInterstitialAdWithCustomEventInfo:info delegate:self];
 }
@@ -97,12 +95,10 @@
         self.options = options.count ? options : nil;
         
         MPLogAdEvent([MPLogEvent adShowAttemptForAdapter:NSStringFromClass(self.class)], self.placementId);
-        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:NO Channel:@"Vungle"];
         [[VungleRouter sharedRouter] presentInterstitialAdFromViewController:rootViewController options:self.options forPlacementId:self.placementId];
     } else {
         NSError *error = [NSError errorWithCode:MOPUBErrorAdapterFailedToLoadAd localizedDescription:@"Failed to show Vungle video interstitial: Vungle now claims that there is no available video ad."];
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], [self getPlacementID]);
-        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"Vungle"];
         [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
     }
 }
@@ -120,7 +116,6 @@
     if (!self.handledAdAvailable) {
         self.handledAdAvailable = YES;
         MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], [self getPlacementID]);
-        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestSuccess isReward:NO Channel:@"Vungle"];
         [self.delegate interstitialCustomEvent:self didLoadAd:nil];
     }
 }
@@ -150,14 +145,12 @@
 {
     NSLog(@"hlyLog:vungle Interstitial关闭");
     MPLogAdEvent([MPLogEvent adDidDisappearForAdapter:NSStringFromClass(self.class)], [self getPlacementID]);
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:AdClose isReward:NO Channel:@"Vungle"];
     [self.delegate interstitialCustomEventDidDisappear:self];
 }
 
 - (void)vungleAdWasTapped
 {
     MPLogAdEvent([MPLogEvent adTappedForAdapter:NSStringFromClass(self.class)], [self getPlacementID]);
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:NO Channel:@"Vungle"];
     [self.delegate interstitialCustomEventDidReceiveTapEvent:self];
 }
 
@@ -165,14 +158,12 @@
 {
     NSLog(@"hlyLog:vungle Interstitial加载失败");
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getPlacementID]);
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:NO Channel:@"Vungle"];
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
 
 - (void)vungleAdDidFailToPlay:(NSError *)error
 {
     MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], [self getPlacementID]);
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:NO Channel:@"Vungle"];
     [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:error];
 }
 

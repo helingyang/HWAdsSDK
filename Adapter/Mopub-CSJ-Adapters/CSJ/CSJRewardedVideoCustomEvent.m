@@ -15,8 +15,7 @@
 
 #import "CSJRewardedVideoCustomEvent.h"
 #import "CSJAdapterConfiguration.h"
-//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-#import <HwFrameworkUpTest1/HwAds.h>
+
 #import "BUDMopub_RewardVideoCustomEventDelegate.h"
 
 #import <BUAdSDK/BUAdSDK.h>
@@ -25,7 +24,7 @@
 
 @property (nonatomic, strong) BURewardedVideoAd *rewardVideoAd;
 @property (nonatomic, strong) BUDMopub_RewardVideoCustomEventDelegate *customEventDelegate;
-
+@property (nonatomic, copy) NSString *placementId;
 
 @end
 
@@ -58,7 +57,7 @@
     [BUAdSDKManager setAppID:appId];
     
     self.placementId = [info objectForKey:@"placementId"];
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:YES Channel:@"CSJ"];
+    
     BURewardedVideoModel *model = [[BURewardedVideoModel alloc] init];
     model.userId = @"123";
     BURewardedVideoAd *RewardedVideoAd = [[BURewardedVideoAd alloc] initWithSlotID:self.placementId rewardedVideoModel:model];
@@ -99,12 +98,10 @@
         [defaults synchronize];
         [self.delegate rewardedVideoWillAppearForCustomEvent:self];
         [self.rewardVideoAd showAdFromRootViewController:viewController ritScene:0 ritSceneDescribe:nil];
-        [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:YES Channel:@"CSJ"];
         [self.delegate rewardedVideoDidAppearForCustomEvent:self];
     }else{
         NSError *error = [NSError errorWithCode:MPRewardedVideoAdErrorNoAdsAvailable localizedDescription:@"Failed to show csj rewarded video: csj now claims that there is no available video ad."];
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.placementId);
-        [[HwAds instance]hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:YES Channel:@"CSJ"];
         [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
     }
 }
@@ -130,7 +127,7 @@
  */
 - (void)rewardedVideoAdDidLoad:(BURewardedVideoAd *)rewardedVideoAd{
      NSLog(@"csj rewardedVideoAdDidLoad 广告请求成功");
-    
+     NSLog(@"hlyLog:CSJ rewardedVideo加载成功");
     MPLogAdEvent([MPLogEvent adLoadSuccessForAdapter:NSStringFromClass(self.class)], self.placementId);
 }
 /**
@@ -139,7 +136,7 @@
  */
 - (void)rewardedVideoAd:(BURewardedVideoAd *)rewardedVideoAd didFailWithError:(NSError *)error{
      NSLog(@"csj 广告请求失败 %@",error);
-    
+     NSLog(@"hlyLog:CSJ rewardedVideo加载失败");
      MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], self.placementId);
 }
 /**
@@ -160,7 +157,7 @@
  */
 - (void)rewardedVideoAdDidClick:(BURewardedVideoAd *)rewardedVideoAd{
   NSLog(@"csj rewardedVideoAdDidClick");
-     
+     NSLog(@"hlyLog:CSJ rewardedVideo关闭");
 }
 /**
  This method is called when video ad play completed or an error occurred.

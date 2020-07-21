@@ -15,8 +15,6 @@
 
 #import "SigmobRewardedVideoCustomEvent.h"
 #import <WindSDK/WindSDK.h>
-//#import <HwFrameworkUpTest1.framework/Headers/HwAds.h>
-#import <HwFrameworkUpTest1/HwAds.h>
 
 @interface SigmobRewardedVideoCustomEvent () <WindRewardedVideoAdDelegate>
 
@@ -59,7 +57,7 @@
     [WindAds startWithOptions:options];
     
     [[WindRewardedVideoAd sharedInstance] setDelegate:self];
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:request isReward:YES Channel:@"Sigmob"];
+    
     [self loadSigmobAD];
 }
 
@@ -84,12 +82,10 @@
         NSError *error = nil;
         [self.delegate rewardedVideoWillAppearForCustomEvent:self];
         [[WindRewardedVideoAd sharedInstance]playAd:viewController withPlacementId:self.placementId options:nil error:&error];
-        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:YES Channel:@"Sigmob"];
         [self.delegate rewardedVideoDidAppearForCustomEvent:self];
     }else{
         NSError *error = [NSError errorWithCode:MPRewardedVideoAdErrorNoAdsAvailable localizedDescription:@"Failed to show Sigmob rewarded video: Sigmob now claims that there is no available video ad."];
         MPLogAdEvent([MPLogEvent adShowFailedForAdapter:NSStringFromClass(self.class) error:error], self.placementId);
-        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:YES Channel:@"Sigmob"];
         [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
     }
 }
@@ -135,7 +131,6 @@
 -(void)onVideoAdLoadSuccess:(NSString * _Nullable)placementId{
     NSLog(@"sigmob onVideoAdLoadSuccess");
     NSLog(@"hlyLog:SigmobRewardedAd加载成功");
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestSuccess isReward:YES Channel:@"Sigmob"];
     [self.delegate rewardedVideoDidLoadAdForCustomEvent:self];
 }
 /**
@@ -152,10 +147,9 @@
  */
 - (void)onVideoAdPlayEnd:(NSString *)placementId{
     NSLog(@"sigmob onVideoAdPlayEnd");
-    MPRewardedVideoReward *rewardd = [[MPRewardedVideoReward alloc] initWithCurrencyType:kMPRewardedVideoRewardCurrencyTypeUnspecified amount:@(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showSuccess isReward:YES Channel:@"Sigmob"];
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:reward isReward:YES Channel:@"Sigmob"];
-    [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:rewardd];
+    MPRewardedVideoReward *reward = [[MPRewardedVideoReward alloc] initWithCurrencyType:kMPRewardedVideoRewardCurrencyTypeUnspecified amount:@(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
+    
+    [self.delegate rewardedVideoShouldRewardUserForCustomEvent:self reward:reward];
 }
 /**
  激励视频广告发生点击
@@ -163,7 +157,6 @@
  */
 -(void)onVideoAdClicked:(NSString * _Nullable)placementId{
     NSLog(@"sigmob onVideoAdClicked");
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:YES Channel:@"Sigmob"];
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self];
 }
 /**
@@ -172,9 +165,7 @@
  @param placementId 广告位Id
  */
 - (void)onVideoAdClosedWithInfo:(WindRewardInfo * _Nullable)info placementId:(NSString * _Nullable)placementId{
-    NSLog(@"hlyLog:SigmobRewardedAd关闭 isComplted:%d",info.isCompeltedView);
-    
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:AdClose isReward:YES Channel:@"Sigmob"];
+    NSLog(@"hlyLog:SigmobRewardedAd关闭");
     [self.delegate rewardedVideoDidDisappearForCustomEvent:self];
 }
 /**
@@ -185,7 +176,6 @@
 -(void)onVideoError:(NSError *)error placementId:(NSString * _Nullable)placementId{
     NSLog(@"sigmob onVideoError");
     NSLog(@"hlyLog:SigmobRewardedAd加载失败");
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:YES Channel:@"Sigmob"];
     [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
 }
 /**
@@ -195,7 +185,6 @@
  */
 -(void)onVideoAdPlayError:(NSError *)error placementId:(NSString * _Nullable)placementId{
     NSLog(@"sigmob onVideoAdPlayError");
-    [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:showFailed isReward:YES Channel:@"Sigmob"];
     [self.delegate rewardedVideoDidFailToPlayForCustomEvent:self error:error];
 }
 

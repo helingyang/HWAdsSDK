@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "HWAdsSDK"
-  spec.version      = "0.1.31"
+  spec.version      = "0.1.32"
   spec.summary      = "用于请求HW广告,一键集成SDK"
 
   # This description is used to generate tags and improve search results.
@@ -182,8 +182,9 @@ Pod::Spec.new do |spec|
   #  the lib prefix of their name.
   #
     #非系统框架
-    spec.vendored_frameworks  = 'SDK/AppsFlyerFramework/AppsFlyerLib.framework','SDK/HwFrameworkUpTest1.framework','SDK/FBSDKCoreKit.framework','Adapter/mopub-ios-sdk/MoPubSDK/Viewability/MOAT/MPUBMoatMobileAppKit.framework','SDK/FBAudienceNetwork.framework'
-    #spec.vendored_frameworks = "SDK/**/*.framework"
+    #spec.vendored_frameworks  = 'SDK/AppsFlyerFramework/AppsFlyerLib.framework','SDK/HwFrameworkUpTest1.framework','SDK/FBSDKCoreKit.framework','SDK/FBAudienceNetwork.framework','Adapter/mopub-ios-sdk/MoPubSDK/Viewability/MOAT/MPUBMoatMobileAppKit.framework'
+    #,'SDK/FBAudienceNetwork.framework'
+    spec.vendored_frameworks = "SDK/**/*.framework"
     # 系统框架
     spec.frameworks = "AdSupport","AVFoundation","CoreGraphics","CoreLocation","CoreMedia","CoreTelephony","Foundation","MediaPlayer","MessageUI","QuartzCore","SafariServices","StoreKit","SystemConfiguration","UIKit","WebKit"
     #非系统静态库

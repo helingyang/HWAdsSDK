@@ -24,7 +24,7 @@
 
 @property (nonatomic, strong) GDTRewardVideoAd *gdtRewardVideoAd;
 @property (nonatomic, copy) NSString *placementId;
-
+@property (nonatomic, assign) BOOL isClick;
 @property (nonatomic, assign) BOOL rewaredLoaded;
 @end
 
@@ -64,7 +64,6 @@
     if(appId==nil){
         NSError *error = [NSError errorWithDomain:MoPubRewardedVideoAdsSDKDomain code:MPRewardedVideoAdErrorInvalidAdUnitID userInfo:@{NSLocalizedDescriptionKey: @"Custom event class data did not contain appId.", NSLocalizedRecoverySuggestionErrorKey: @"Update your MoPub custom event class data to contain a valid Sigmob Appid."}];
         MPLogAdEvent([MPLogEvent adLoadFailedForAdapter:NSStringFromClass(self.class) error:error], nil);
-        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:requestFailed isReward:YES Channel:@"GDT"];
         [self.delegate rewardedVideoDidFailToLoadAdForCustomEvent:self error:error];
         return;
     }
@@ -87,6 +86,7 @@
         [defaults setObject:@"GDT" forKey:@"hwvideotype"];
         [defaults synchronize];
         [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:show isReward:YES Channel:@"GDT"];
+        self.isClick = NO;
         [self.delegate rewardedVideoWillAppearForCustomEvent:self];
         [self.gdtRewardVideoAd showAdFromRootViewController:viewController];
         [self.delegate rewardedVideoDidAppearForCustomEvent:self];
@@ -182,7 +182,11 @@
  @param rewardedVideoAd GDTRewardVideoAd 实例
  */
 - (void)gdt_rewardVideoAdDidClicked:(GDTRewardVideoAd *)rewardedVideoAd{
-     [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:YES Channel:@"GDT"];
+    if (!self.isClick) {
+        [[HwAds instance] hwAdsEventByPlacementId:self.placementId hwSdkState:click isReward:YES Channel:@"GDT"];
+        self.isClick = YES;
+    }
+     
     [self.delegate rewardedVideoDidReceiveTapEventForCustomEvent:self];
 }
 
